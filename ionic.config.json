@@ -1,0 +1,7 @@
+{
+  "name": "FitUc2",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
