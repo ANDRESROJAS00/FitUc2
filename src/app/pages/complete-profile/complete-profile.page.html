@@ -1,0 +1,44 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Completa tu perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+    <ion-item>
+      <ion-label>Sexo</ion-label>
+      <ion-select formControlName="sexo" placeholder="Selecciona tu sexo">
+        <ion-select-option value="Masculino">Masculino</ion-select-option>
+        <ion-select-option value="Femenino">Femenino</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Edad</ion-label>
+      <ion-input type="number" formControlName="edad" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Altura (cm)</ion-label>
+      <ion-input type="number" formControlName="altura" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Peso (kg)</ion-label>
+      <ion-input type="number" formControlName="peso" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Objetivo</ion-label>
+      <ion-select formControlName="objetivo" placeholder="Selecciona tu objetivo">
+        <ion-select-option value="Subir de peso">Subir de peso</ion-select-option>
+        <ion-select-option value="Bajar de peso">Bajar de peso</ion-select-option>
+        <ion-select-option value="Mantener peso">Mantener peso</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-button expand="full" type="submit" [disabled]="profileForm.invalid">Guardar</ion-button>
+  </form>
+</ion-content>
+

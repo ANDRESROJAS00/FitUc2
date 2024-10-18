@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Iniciar Sesión</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <ion-item>
+      <ion-label position="floating">Correo</ion-label>
+      <ion-input formControlName="email" type="email" required></ion-input>
+    </ion-item>
+
+    <!-- Mensajes de error para el email -->
+    <ion-text color="danger" *ngIf="loginForm.controls['email'].invalid && loginForm.controls['email'].touched">
+      <p *ngIf="loginForm.controls['email'].errors?.['required']">El correo es obligatorio.</p>
+      <p *ngIf="loginForm.controls['email'].errors?.['email']">El formato del correo es inválido.</p>
+    </ion-text>
+
+    <ion-item>
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input formControlName="password" type="password" required></ion-input>
+    </ion-item>
+
+    <!-- Mensajes de error para la contraseña -->
+    <ion-text color="danger" *ngIf="loginForm.controls['password'].invalid && loginForm.controls['password'].touched">
+      <p *ngIf="loginForm.controls['password'].errors?.['required']">La contraseña es obligatoria.</p>
+      <p *ngIf="loginForm.controls['password'].errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</p>
+    </ion-text>
+
+    <ion-button expand="full" type="submit" [disabled]="loginForm.invalid">Iniciar Sesión</ion-button>
+
+    <!-- Botón de Crear Cuenta para redirigir a la página de registro -->
+    <ion-button expand="full" fill="clear" routerLink="/register">
+      Crear cuenta
+    </ion-button>
+  </form>
+</ion-content>
