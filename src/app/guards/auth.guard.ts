@@ -2,9 +2,8 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-import { SupabaseService } from '../services/supabase.service';
+import { Observable, of } from 'rxjs';
+import { map, switchMap, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -13,29 +12,25 @@ export class AuthGuard implements CanActivate {
 
   constructor(
     private authService: AuthService, 
-    private router: Router,
-    private supabaseService: SupabaseService // Inyectamos el servicio para comprobar el perfil
+    private router: Router
   ) {}
 
   canActivate(): Observable<boolean> {
     return this.authService.getAuthState().pipe(
-      switchMap(isAuthenticated => {
-        if (!isAuthenticated) {
-          this.router.navigate(['/login']);
-          return [false];
+      switchMap((isAuthenticated) => {
+        if (isAuthenticated) {
+          return of(true);  // Usuario autenticado, permitir acceso
+        } else {
+          this.router.navigate(['/login']);  // No autenticado, redirigir a login
+          return of(false);
         }
-
-        return this.supabaseService.getUser().then(user => {
-          return this.supabaseService.isProfileComplete(user?.id).then(isComplete => {
-            if (!isComplete) {
-              this.router.navigate(['/complete-profile']); // Redirigir a completar perfil si no está completo
-              return false;
-            }
-            return true;
-          });
-        });
+      }),
+      catchError(() => {
+        this.router.navigate(['/login']);  // Si ocurre un error, redirigir a login
+        return of(false);
       })
     );
   }
 }
+
 

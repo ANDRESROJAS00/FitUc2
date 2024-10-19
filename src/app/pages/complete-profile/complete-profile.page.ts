@@ -19,9 +19,9 @@ export class CompleteProfilePage {
   ) {
     this.profileForm = this.formBuilder.group({
       sexo: ['', Validators.required],
-      edad: ['', [Validators.required, Validators.min(1)]],
-      altura: ['', [Validators.required, Validators.min(1)]],
-      peso: ['', [Validators.required, Validators.min(1)]],
+      edad: ['', [Validators.required, Validators.min(1), Validators.max(120)]],
+      altura: ['', [Validators.required, Validators.min(50), Validators.max(250)]],
+      peso: ['', [Validators.required, Validators.min(2), Validators.max(300)]],
       objetivo: ['', Validators.required],
     });
   }

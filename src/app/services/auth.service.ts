@@ -18,13 +18,14 @@ export class AuthService {
     this.checkAuthStatus(); // Verifica el estado de autenticación al iniciar
   }
 
-  // Método para verificar el estado de autenticación de forma asíncrona
-  checkAuthStatus() {
-    this.supabaseService.getUser().then((user: any) => {
-      // Asegúrate de tipar el 'user'
-      this.authState.next(!!user); // Actualiza el estado según si hay un usuario autenticado
-    });
-  }
+ // Método para verificar el estado de autenticación
+ checkAuthStatus() {
+  this.supabaseService.getUser().then(user => {
+    this.authState.next(!!user);  // Actualiza el estado según si hay un usuario autenticado
+  }).catch(() => {
+    this.authState.next(false);  // Si falla, considera al usuario como no autenticado
+  });
+}
 
   // Devuelve el estado de autenticación como observable
   getAuthState(): Observable<boolean> {
@@ -68,21 +69,14 @@ export class AuthService {
     }
   }
 
-
-   // Método para registrarse
-   async register(email: string, password: string, nombre: string) {
+  // Método para registrarse
+  async register(email: string, password: string, nombre: string) {
     try {
-      await this.supabaseService.signUp(email, password, nombre);  // Ahora acepta el nombre también
+      await this.supabaseService.signUp(email, password, nombre); // Ahora acepta el nombre también
       this.checkAuthStatus(); // Actualiza el estado de autenticación tras registrarse
     } catch (error) {
       console.error('Error al registrarse', error);
       throw error;
     }
   }
-
-
-
-
-
-
 }

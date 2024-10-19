@@ -14,19 +14,17 @@ export class SupabaseService {
     );
   }
 
-// Método para obtener el perfil del usuario
-async getUserProfile(userId: string) {
-  const { data, error } = await this.supabase
-    .from('usuarios')
-    .select('*')
-    .eq('id_usuario', userId)
-    .single();
+  // Método para obtener el perfil del usuario
+  async getUserProfile(userId: string) {
+    const { data, error } = await this.supabase
+      .from('usuarios')
+      .select('*')
+      .eq('id_usuario', userId)
+      .single();
 
-  if (error) throw error;
-  return data;
-}
-
-
+    if (error) throw error;
+    return data;
+  }
 
   // Método para actualizar el perfil del usuario
   async updateUserProfile(profileData: any) {
@@ -38,79 +36,66 @@ async getUserProfile(userId: string) {
     if (error) throw error;
   }
 
-
-  // Método para obtener el usuario autenticado
+  // Obtener el usuario autenticado
   async getUser() {
-    const { data, error } = await this.supabase.auth.getUser();  // Obtiene el usuario autenticado
+    const { data, error } = await this.supabase.auth.getUser();
     if (error) throw error;
     return data.user;  // Retorna el usuario autenticado
   }
 
-  // Función para iniciar sesión con correo y contraseña
-  async signIn(email: string, password: string) {
-    const { error } = await this.supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-  }
-
-// Método para registrar un nuevo usuario y almacenarlo en la tabla "usuarios"
-async signUp(email: string, password: string, nombre: string) {
-  // Paso 1: Registrar al usuario en Supabase Auth
-  const { data, error } = await this.supabase.auth.signUp({ email, password });
-  if (error) throw error;
-
-  const userId = data.user?.id; // UUID generado por Supabase
-  if (userId) {
-    // Paso 2: Almacenar al usuario en la tabla "usuarios" sin contraseña
-    const { error: insertError } = await this.supabase
-      .from('usuarios')
-      .insert({
-        id_usuario: userId,  // Ahora UUID
-        nombre: nombre,
-        email: email,
-        // No incluimos la contraseña
-      });
-
-    if (insertError) throw insertError;
-  }
-}
-  
-
-  // Función para cerrar sesión
+  // Cerrar sesión
   async signOut() {
     const { error } = await this.supabase.auth.signOut();
     if (error) throw error;
   }
 
 
+  // Función para iniciar sesión con correo y contraseña
+  async signIn(email: string, password: string) {
+    const { error } = await this.supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) throw error;
+  }
+
+  // Método para registrar un nuevo usuario y almacenarlo en la tabla "usuarios"
+  async signUp(email: string, password: string, nombre: string) {
+    // Paso 1: Registrar al usuario en Supabase Auth
+    const { data, error } = await this.supabase.auth.signUp({
+      email,
+      password,
+    });
+    if (error) throw error;
+
+    const userId = data.user?.id; // UUID generado por Supabase
+    if (userId) {
+      // Paso 2: Almacenar al usuario en la tabla "usuarios" sin contraseña
+      const { error: insertError } = await this.supabase
+        .from('usuarios')
+        .insert({
+          id_usuario: userId, // Ahora UUID
+          nombre: nombre,
+          email: email,
+          // No incluimos la contraseña
+        });
+
+      if (insertError) throw insertError;
+    }
+  }
 
 
- // Verifica si el perfil del usuario está completo
- async isProfileComplete(userId: string): Promise<boolean> {
-  const profile = await this.getUserProfile(userId);
-  return (
-    profile &&
-    profile.sexo &&  // Verificamos que todos estos campos estén presentes
-    profile.edad &&
-    profile.altura &&
-    profile.peso &&
-    profile.objetivo
-  );
-}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  // Verifica si el perfil del usuario está completo
+  async isProfileComplete(userId: string): Promise<boolean> {
+    const profile = await this.getUserProfile(userId);
+    return (
+      profile &&
+      profile.sexo && // Verificamos que todos estos campos estén presentes
+      profile.edad &&
+      profile.altura &&
+      profile.peso &&
+      profile.objetivo
+    );
+  }
 }
