@@ -13,9 +13,9 @@ export class CompleteProfilePage {
   profileForm: FormGroup;
 
   constructor(
-    private formBuilder: FormBuilder,
-    private supabaseService: SupabaseService,
-    private router: Router
+    private readonly formBuilder: FormBuilder,
+    private readonly supabaseService: SupabaseService,
+    private readonly router: Router
   ) {
     this.profileForm = this.formBuilder.group({
       sexo: ['', Validators.required],

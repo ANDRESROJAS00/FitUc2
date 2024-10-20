@@ -1,8 +1,9 @@
 // src/app/pages/alimentos/alimentos.page.ts
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { AlimentosService } from 'src/app/services/alimentos.service';
-import { SupabaseService } from 'src/app/services/supabase.service';  // Para obtener el userId
+import { SupabaseService } from 'src/app/services/supabase.service'; // Para obtener el userId
 
 @Component({
   selector: 'app-alimentos',
@@ -14,13 +15,12 @@ export class AlimentosPage implements OnInit {
   alimentoForm: FormGroup;
   editMode = false;
   alimentoId: number | null = null;
-  userId: string | null = null;  // Para almacenar el ID del usuario autenticado
-  
+  userId: string | null = null; // Para almacenar el ID del usuario autenticado
 
   constructor(
-    private alimentosService: AlimentosService,
-    private supabaseService: SupabaseService,  // Inyectamos SupabaseService para obtener el userId
-    private formBuilder: FormBuilder
+    private readonly alimentosService: AlimentosService,
+    private readonly supabaseService: SupabaseService, // Inyectamos SupabaseService para obtener el userId
+    private readonly formBuilder: FormBuilder
   ) {
     // Crear el formulario
     this.alimentoForm = this.formBuilder.group({
@@ -39,7 +39,7 @@ export class AlimentosPage implements OnInit {
     this.userId = user?.id || null;
 
     if (this.userId) {
-      this.loadAlimentos();  // Cargar los alimentos si el usuario está autenticado
+      this.loadAlimentos(); // Cargar los alimentos si el usuario está autenticado
     }
   }
 
@@ -58,16 +58,20 @@ export class AlimentosPage implements OnInit {
 
     if (this.editMode && this.alimentoId) {
       // Actualizar el alimento
-      this.alimentosService.updateAlimento(this.alimentoId, alimentoData).subscribe(() => {
-        this.loadAlimentos(); // Volver a cargar la lista
-        this.resetForm(); // Reiniciar el formulario
-      });
+      this.alimentosService
+        .updateAlimento(this.alimentoId, alimentoData)
+        .subscribe(() => {
+          this.loadAlimentos(); // Volver a cargar la lista
+          this.resetForm(); // Reiniciar el formulario
+        });
     } else if (this.userId) {
       // Agregar un nuevo alimento
-      this.alimentosService.addAlimento(alimentoData, this.userId).subscribe(() => {
-        this.loadAlimentos(); // Volver a cargar la lista
-        this.resetForm(); // Reiniciar el formulario
-      });
+      this.alimentosService
+        .addAlimento(alimentoData, this.userId)
+        .subscribe(() => {
+          this.loadAlimentos(); // Volver a cargar la lista
+          this.resetForm(); // Reiniciar el formulario
+        });
     }
   }
 
@@ -79,12 +83,13 @@ export class AlimentosPage implements OnInit {
   }
 
   // Eliminar alimento
-  deleteAlimento(id: number) {
-    this.alimentosService.deleteAlimento(id).subscribe(() => {
+  async deleteAlimento(id: number) {
+    try {
+      await firstValueFrom(this.alimentosService.deleteAlimento(id)); // Convertimos el observable a promesa
       this.loadAlimentos(); // Recargar los alimentos después de eliminar
-    }, (error) => {
-      console.error('Error eliminando el alimento', error);  // Maneja el error
-    });
+    } catch (error) {
+      console.error('Error eliminando el alimento', error); // Maneja el error
+    }
   }
 
   // Reiniciar el formulario
@@ -100,12 +105,18 @@ export class AlimentosPage implements OnInit {
     this.editMode = false;
     this.alimentoId = null;
   }
+
+
+  //Recomendación de SonarLint
+  // Manejar el evento keydown para accesibilidad
+  handleKeydown(event: KeyboardEvent, action: string, alimento: any) {
+    // Si se presiona Enter o Space, ejecuta la acción
+    if (event.key === 'Enter' || event.key === ' ') {
+      if (action === 'edit') {
+        this.editAlimento(alimento);
+      } else if (action === 'delete') {
+        this.deleteAlimento(alimento);
+      }
+    }
+  }
 }
-
-
-
-
-
-
-
-

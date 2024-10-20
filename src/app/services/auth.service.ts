@@ -9,11 +9,11 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
-  private authState = new BehaviorSubject<boolean>(false); // Estado de autenticación
+  private readonly authState = new BehaviorSubject<boolean>(false); // Estado de autenticación
 
   constructor(
-    private supabaseService: SupabaseService,
-    private router: Router
+    private readonly supabaseService: SupabaseService,
+    private readonly router: Router
   ) {
     this.checkAuthStatus(); // Verifica el estado de autenticación al iniciar
   }

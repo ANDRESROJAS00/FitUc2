@@ -10,7 +10,7 @@ import { AuthService } from 'src/app/services/auth.service';  // Importa AuthSer
 })
 export class HomePage {
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private readonly router: Router, private readonly authService: AuthService) {}
 
   // Función para redirigir a la página de perfil
   goToProfile() {

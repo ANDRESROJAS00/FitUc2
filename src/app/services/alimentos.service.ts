@@ -8,15 +8,15 @@ import { environment } from '../../environments/environment';
   providedIn: 'root',
 })
 export class AlimentosService {
-  private supabaseUrl = environment.supabaseUrl;
-  private apiKey = environment.supabaseApiKey;
-  private headers = new HttpHeaders({
+  private readonly supabaseUrl = environment.supabaseUrl;
+  private readonly apiKey = environment.supabaseApiKey;
+  private readonly headers = new HttpHeaders({
     apikey: this.apiKey,
     Authorization: `Bearer ${this.apiKey}`,
     'Content-Type': 'application/json',
   });
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   // Obtener todos los alimentos de un usuario
   getAlimentos(userId: string): Observable<any> {

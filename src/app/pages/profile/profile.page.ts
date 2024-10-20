@@ -11,7 +11,7 @@ export class ProfilePage implements OnInit {
   userProfile: any;
   caloriasRecomendadas: number = 0;
 
-  constructor(private supabaseService: SupabaseService) {}
+  constructor(private readonly supabaseService: SupabaseService) {}
 
   async ngOnInit() {
     const user = await this.supabaseService.getUser();

@@ -15,11 +15,11 @@ export class RegisterPage {
   registerForm: FormGroup; // Declarar el formulario
 
   constructor(
-    private authService: AuthService,
-    private router: Router,
-    private alertController: AlertController,
-    private loadingController: LoadingController,
-    private formBuilder: FormBuilder // Inyectar FormBuilder
+    private readonly authService: AuthService,
+    private readonly router: Router,
+    private readonly alertController: AlertController,
+    private readonly loadingController: LoadingController,
+    private readonly formBuilder: FormBuilder // Inyectar FormBuilder
   ) {
     // Inicializar el formulario con validaciones
     // src/app/pages/register/register.page.ts

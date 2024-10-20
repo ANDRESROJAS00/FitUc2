@@ -5,7 +5,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
   providedIn: 'root',
 })
 export class SupabaseService {
-  private supabase: SupabaseClient;
+  private readonly supabase: SupabaseClient;
 
   constructor() {
     this.supabase = createClient(
@@ -86,16 +86,15 @@ export class SupabaseService {
 
 
 
-  // Verifica si el perfil del usuario está completo
   async isProfileComplete(userId: string): Promise<boolean> {
     const profile = await this.getUserProfile(userId);
     return (
-      profile &&
-      profile.sexo && // Verificamos que todos estos campos estén presentes
-      profile.edad &&
-      profile.altura &&
-      profile.peso &&
-      profile.objetivo
+      profile?.sexo &&
+      profile?.edad &&
+      profile?.altura &&
+      profile?.peso &&
+      profile?.objetivo
     );
   }
+  
 }
