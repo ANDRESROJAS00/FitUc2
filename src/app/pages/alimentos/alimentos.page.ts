@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlimentosService } from '../../services/alimentos.service';
-import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-alimentos',
@@ -16,16 +15,15 @@ export class AlimentosPage implements OnInit {
 
   constructor(
     private alimentosService: AlimentosService,
-    private formBuilder: FormBuilder,
-    private alertController: AlertController
+    private formBuilder: FormBuilder
   ) {
     this.alimentoForm = this.formBuilder.group({
-      nombre: ['', [Validators.required, Validators.maxLength(100)]],
-      calorias: [0, [Validators.required, Validators.min(0)]],
-      proteinas: [0, [Validators.required, Validators.min(0)]],
-      carbohidratos: [0, [Validators.required, Validators.min(0)]],
-      grasas: [0, [Validators.required, Validators.min(0)]],
-      porcion: ['', [Validators.required, Validators.maxLength(50)]],
+      nombre: ['', Validators.required],
+      calorias: [0, Validators.required],
+      proteinas: [0, Validators.required],
+      carbohidratos: [0, Validators.required],
+      grasas: [0, Validators.required],
+      porcion: [0, Validators.required],
     });
   }
 
@@ -84,35 +82,15 @@ export class AlimentosPage implements OnInit {
   }
 
   // Eliminar alimento
-  async deleteAlimento(id: number) {
-    const alert = await this.alertController.create({
-      header: 'Confirmar eliminación',
-      message: '¿Estás seguro de que deseas eliminar este alimento?',
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          handler: () => {
-            console.log('Eliminación cancelada');
-          },
-        },
-        {
-          text: 'Eliminar',
-          handler: () => {
-            this.alimentosService.deleteAlimento(id).subscribe(
-              () => {
-                this.loadAlimentos();
-              },
-              error => {
-                console.error('Error deleting alimento:', error);
-              }
-            );
-          },
-        },
-      ],
-    });
-
-    await alert.present();
+  deleteAlimento(id: number) {
+    this.alimentosService.deleteAlimento(id).subscribe(
+      () => {
+        this.loadAlimentos();
+      },
+      error => {
+        console.error('Error deleting alimento:', error);
+      }
+    );
   }
 
   // Reiniciar el formulario
@@ -125,10 +103,11 @@ export class AlimentosPage implements OnInit {
       proteinas: 0,
       carbohidratos: 0,
       grasas: 0,
-      porcion: '',
+      procion: 0,
     });
   }
 }
+
 
 
 
