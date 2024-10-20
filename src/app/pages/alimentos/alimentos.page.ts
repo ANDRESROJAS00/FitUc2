@@ -1,7 +1,7 @@
-// src/app/pages/alimentos/alimentos.page.ts
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlimentosService } from 'src/app/services/alimentos.service';
+import { AlimentosService } from '../../services/alimentos.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-alimentos',
@@ -16,46 +16,63 @@ export class AlimentosPage implements OnInit {
 
   constructor(
     private alimentosService: AlimentosService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private alertController: AlertController
   ) {
-    // Crear el formulario
     this.alimentoForm = this.formBuilder.group({
-      nombre: ['', Validators.required],
-      calorias: [0, Validators.required],
-      proteinas: [0, Validators.required],
-      carbohidratos: [0, Validators.required],
-      grasas: [0, Validators.required],
-      porcion: ['', Validators.required],
+      nombre: ['', [Validators.required, Validators.maxLength(100)]],
+      calorias: [0, [Validators.required, Validators.min(0)]],
+      proteinas: [0, [Validators.required, Validators.min(0)]],
+      carbohidratos: [0, [Validators.required, Validators.min(0)]],
+      grasas: [0, [Validators.required, Validators.min(0)]],
+      porcion: ['', [Validators.required, Validators.maxLength(50)]],
     });
   }
 
   ngOnInit() {
-    this.loadAlimentos(); // Cargar los alimentos cuando se carga la página
+    this.loadAlimentos();
   }
 
- // Cargar alimentos desde Supabase
- loadAlimentos() {
-  this.alimentosService.getAlimentos().subscribe((data) => {
-    this.alimentos = data;
-  });
-}
+  // Cargar alimentos desde Supabase
+  loadAlimentos() {
+    this.alimentosService.getAlimentos().subscribe(
+      data => {
+        this.alimentos = data;
+      },
+      error => {
+        console.error('Error loading alimentos:', error);
+      }
+    );
+  }
 
   // Agregar o actualizar alimento
   onSubmit() {
-    const alimentoData = this.alimentoForm.value;
+    if (this.alimentoForm.invalid) {
+      return;
+    }
 
-    if (this.editMode && this.alimentoId) {
-      // Actualizar el alimento
-      this.alimentosService.updateAlimento(this.alimentoId, alimentoData).subscribe(() => {
-        this.loadAlimentos(); // Volver a cargar la lista
-        this.resetForm(); // Reiniciar el formulario
-      });
+    const alimento = this.alimentoForm.value;
+
+    if (this.editMode && this.alimentoId !== null) {
+      this.alimentosService.updateAlimento(this.alimentoId, alimento).subscribe(
+        () => {
+          this.loadAlimentos();
+          this.resetForm();
+        },
+        error => {
+          console.error('Error updating alimento:', error);
+        }
+      );
     } else {
-      // Agregar un nuevo alimento
-      this.alimentosService.addAlimento(alimentoData).subscribe(() => {
-        this.loadAlimentos(); // Volver a cargar la lista
-        this.resetForm(); // Reiniciar el formulario
-      });
+      this.alimentosService.addAlimento(alimento).subscribe(
+        () => {
+          this.loadAlimentos();
+          this.resetForm();
+        },
+        error => {
+          console.error('Error adding alimento:', error);
+        }
+      );
     }
   }
 
@@ -66,17 +83,42 @@ export class AlimentosPage implements OnInit {
     this.alimentoForm.patchValue(alimento);
   }
 
-   // Eliminar alimento
-   deleteAlimento(id: number) {
-    this.alimentosService.deleteAlimento(id).subscribe(() => {
-      this.loadAlimentos(); // Recargar los alimentos después de eliminar
-    }, (error) => {
-      console.error('Error eliminando el alimento', error);  // Maneja el error
+  // Eliminar alimento
+  async deleteAlimento(id: number) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar eliminación',
+      message: '¿Estás seguro de que deseas eliminar este alimento?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          handler: () => {
+            console.log('Eliminación cancelada');
+          },
+        },
+        {
+          text: 'Eliminar',
+          handler: () => {
+            this.alimentosService.deleteAlimento(id).subscribe(
+              () => {
+                this.loadAlimentos();
+              },
+              error => {
+                console.error('Error deleting alimento:', error);
+              }
+            );
+          },
+        },
+      ],
     });
+
+    await alert.present();
   }
 
   // Reiniciar el formulario
   resetForm() {
+    this.editMode = false;
+    this.alimentoId = null;
     this.alimentoForm.reset({
       nombre: '',
       calorias: 0,
@@ -85,11 +127,8 @@ export class AlimentosPage implements OnInit {
       grasas: 0,
       porcion: '',
     });
-    this.editMode = false;
-    this.alimentoId = null;
   }
 }
-
 
 
 

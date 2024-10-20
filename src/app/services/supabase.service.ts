@@ -9,108 +9,106 @@ export class SupabaseService {
 
   constructor() {
     this.supabase = createClient(
-      'https://ssnrbbrnjivwmhciwrht.supabase.co', // Reemplaza con tu URL de Supabase
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzbnJiYnJuaml2d21oY2l3cmh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg0Mjc5MTUsImV4cCI6MjA0NDAwMzkxNX0.wUXrxMqXNr2r6fkT_efQINeMh6pbKwWu3z6KETZwZl8' // Reemplaza con tu Anon Key de Supabase
+      'https://ssnrbbrnjivwmhciwrht.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzbnJiYnJuaml2d21oY2l3cmh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg0Mjc5MTUsImV4cCI6MjA0NDAwMzkxNX0.wUXrxMqXNr2r6fkT_efQINeMh6pbKwWu3z6KETZwZl8'
     );
   }
 
-// Método para obtener el perfil del usuario
-async getUserProfile(userId: string) {
-  const { data, error } = await this.supabase
-    .from('usuarios')
-    .select('*')
-    .eq('id_usuario', userId)
-    .single();
+  async getUserProfile(userId: string) {
+    const { data, error } = await this.supabase
+      .from('usuarios')
+      .select('*')
+      .eq('id_usuario', userId)
+      .single();
 
-  if (error) throw error;
-  return data;
-}
+    if (error) {
+      console.error('Error fetching user profile:', error);
+      throw error;
+    }
+    return data;
+  }
 
-
-
-  // Método para actualizar el perfil del usuario
   async updateUserProfile(profileData: any) {
     const { error } = await this.supabase
       .from('usuarios')
       .update(profileData)
       .eq('id_usuario', profileData.id_usuario);
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error updating user profile:', error);
+      throw error;
+    }
   }
 
-
-  // Método para obtener el usuario autenticado
   async getUser() {
-    const { data, error } = await this.supabase.auth.getUser();  // Obtiene el usuario autenticado
-    if (error) throw error;
-    return data.user;  // Retorna el usuario autenticado
+    const { data, error } = await this.supabase.auth.getUser();
+    if (error) {
+      console.error('Error getting user:', error);
+      throw error;
+    }
+    return data.user;
   }
 
-  // Función para iniciar sesión con correo y contraseña
   async signIn(email: string, password: string) {
-    const { error } = await this.supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    const { error } = await this.supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) {
+      console.error('Error signing in:', error);
+      throw error;
+    }
   }
 
-// Método para registrar un nuevo usuario y almacenarlo en la tabla "usuarios"
-async signUp(email: string, password: string, nombre: string) {
-  // Paso 1: Registrar al usuario en Supabase Auth
-  const { data, error } = await this.supabase.auth.signUp({ email, password });
-  if (error) throw error;
+  async signUp(email: string, password: string, nombre: string) {
+    const { data, error } = await this.supabase.auth.signUp({
+      email,
+      password,
+    });
+    if (error) {
+      console.error('Error signing up:', error);
+      throw error;
+    }
 
-  const userId = data.user?.id; // UUID generado por Supabase
-  if (userId) {
-    // Paso 2: Almacenar al usuario en la tabla "usuarios" sin contraseña
-    const { error: insertError } = await this.supabase
-      .from('usuarios')
-      .insert({
-        id_usuario: userId,  // Ahora UUID
-        nombre: nombre,
-        email: email,
-        // No incluimos la contraseña
-      });
+    const userId = data.user?.id;
+    if (userId) {
+      const { error: profileError } = await this.supabase
+        .from('usuarios')
+        .insert({ id_usuario: userId, nombre, email });
 
-    if (insertError) throw insertError;
+      if (profileError) {
+        console.error('Error creating user profile:', profileError);
+        throw profileError;
+      }
+    }
   }
-}
-  
 
-  // Función para cerrar sesión
   async signOut() {
     const { error } = await this.supabase.auth.signOut();
-    if (error) throw error;
+    if (error) {
+      console.error('Error signing out:', error);
+      throw error;
+    }
   }
 
+  async isProfileComplete(userId: string): Promise<boolean> {
+    const { data, error } = await this.supabase
+      .from('usuarios')
+      .select('peso, altura, edad, sexo, objetivo')
+      .eq('id_usuario', userId)
+      .single();
 
+    if (error) {
+      console.error('Error checking profile completeness:', error);
+      throw error;
+    }
 
-
- // Verifica si el perfil del usuario está completo
- async isProfileComplete(userId: string): Promise<boolean> {
-  const profile = await this.getUserProfile(userId);
-  return (
-    profile &&
-    profile.sexo &&  // Verificamos que todos estos campos estén presentes
-    profile.edad &&
-    profile.altura &&
-    profile.peso &&
-    profile.objetivo
-  );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return !!(
+      data.peso &&
+      data.altura &&
+      data.edad &&
+      data.sexo &&
+      data.objetivo
+    );
+  }
 }
