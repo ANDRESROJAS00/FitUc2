@@ -17,15 +17,14 @@ export class CompleteProfilePage {
     private supabaseService: SupabaseService,
     private router: Router
   ) {
-   // src/app/pages/complete-profile/complete-profile.page.ts
-this.profileForm = this.formBuilder.group({
-  sexo: ['', Validators.required],
-  edad: ['', [Validators.required, Validators.min(1)]],
-  altura: ['', [Validators.required, Validators.min(1)]],
-  peso: ['', [Validators.required, Validators.min(1)]],
-  objetivo: ['', Validators.required],
-  nivelActividad: ['', Validators.required], // Nuevo campo para nivel de actividad
-});
+    this.profileForm = this.formBuilder.group({
+      sexo: ['', Validators.required],
+      edad: ['', [Validators.required, Validators.min(14)]], // Edad mínima de 14 años
+      altura: ['', [Validators.required, Validators.min(50), Validators.max(250)]], // Altura entre 50 cm y 250 cm
+      peso: ['', [Validators.required, Validators.min(20), Validators.max(300)]], // Peso entre 20 kg y 300 kg
+      objetivo: ['', Validators.required],
+      nivelActividad: ['', Validators.required],
+    });
   }
 
   async onSubmit() {

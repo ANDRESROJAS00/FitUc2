@@ -1,27 +1,31 @@
-#container {
-  text-align: center;
+/* src/app/pages/home/home.page.scss */
 
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+ion-card {
+  margin: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff; /* Fondo blanco */
+  color: #000000; /* Texto negro */
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+ion-card-header {
+  display: flex;
+  align-items: center;
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
+ion-card-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.2em;
+  color: #000000; /* Texto negro */
 }
 
-#container a {
-  text-decoration: none;
+ion-icon {
+  font-size: 1.5em;
+  margin-right: 10px;
+  color: #002df7; /* Íconos azules */
+}
+
+.logout-icon {
+  color: #ffffff; /* Ícono de cerrar sesión en blanco */
 }

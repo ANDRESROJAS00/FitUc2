@@ -2,6 +2,9 @@
 
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" class="back-button"></ion-back-button>
+    </ion-buttons>
     <ion-title>Perfil del Usuario</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -21,9 +24,9 @@
         <p><strong>Nivel de Actividad:</strong> {{ userProfile.nivelActividad }}</p>
         <p><strong>Calorías recomendadas:</strong> {{ caloriasRecomendadas }} kcal</p>
         <p><strong>Calorías consumidas:</strong> {{ caloriasConsumidas }} kcal</p>
+        <ion-progress-bar value="{{ caloriasConsumidas / caloriasRecomendadas }}" color="primary"></ion-progress-bar>
         <p><strong>Calorías restantes:</strong> {{ caloriasRecomendadas - caloriasConsumidas }} kcal</p>
       </ion-card-content>
     </ion-card>
   </div>
 </ion-content>
-

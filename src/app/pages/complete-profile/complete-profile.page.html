@@ -7,51 +7,69 @@
 </ion-header>
 
 <ion-content>
-  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-    <ion-item>
-      <ion-label>Sexo</ion-label>
-      <ion-select formControlName="sexo" placeholder="Selecciona tu sexo">
-        <ion-select-option value="Masculino">Masculino</ion-select-option>
-        <ion-select-option value="Femenino">Femenino</ion-select-option>
-      </ion-select>
-    </ion-item>
+  <div class="complete-profile-container">
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+      <ion-item>
+        <ion-label>Sexo</ion-label>
+        <ion-select formControlName="sexo" placeholder="Selecciona tu sexo">
+          <ion-select-option value="Masculino">Masculino</ion-select-option>
+          <ion-select-option value="Femenino">Femenino</ion-select-option>
+        </ion-select>
+      </ion-item>
 
-    <ion-item>
-      <ion-label>Edad</ion-label>
-      <ion-input type="number" formControlName="edad" required></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label>Edad</ion-label>
+        <ion-input type="number" formControlName="edad" required></ion-input>
+      </ion-item>
+      <!-- Mensajes de error para la edad -->
+      <ion-text color="danger" *ngIf="profileForm.controls['edad'].invalid && profileForm.controls['edad'].touched">
+        <p *ngIf="profileForm.controls['edad'].errors?.['required']">La edad es obligatoria.</p>
+        <p *ngIf="profileForm.controls['edad'].errors?.['min']">La edad mínima es 14 años.</p>
+      </ion-text>
 
-    <ion-item>
-      <ion-label>Altura (cm)</ion-label>
-      <ion-input type="number" formControlName="altura" required></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label>Altura (cm)</ion-label>
+        <ion-input type="number" formControlName="altura" required></ion-input>
+      </ion-item>
+      <!-- Mensajes de error para la altura -->
+      <ion-text color="danger" *ngIf="profileForm.controls['altura'].invalid && profileForm.controls['altura'].touched">
+        <p *ngIf="profileForm.controls['altura'].errors?.['required']">La altura es obligatoria.</p>
+        <p *ngIf="profileForm.controls['altura'].errors?.['min']">La altura mínima es 50 cm.</p>
+        <p *ngIf="profileForm.controls['altura'].errors?.['max']">La altura máxima es 250 cm.</p>
+      </ion-text>
 
-    <ion-item>
-      <ion-label>Peso (kg)</ion-label>
-      <ion-input type="number" formControlName="peso" required></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label>Peso (kg)</ion-label>
+        <ion-input type="number" formControlName="peso" required></ion-input>
+      </ion-item>
+      <!-- Mensajes de error para el peso -->
+      <ion-text color="danger" *ngIf="profileForm.controls['peso'].invalid && profileForm.controls['peso'].touched">
+        <p *ngIf="profileForm.controls['peso'].errors?.['required']">El peso es obligatorio.</p>
+        <p *ngIf="profileForm.controls['peso'].errors?.['min']">El peso mínimo es 20 kg.</p>
+        <p *ngIf="profileForm.controls['peso'].errors?.['max']">El peso máximo es 300 kg.</p>
+      </ion-text>
 
-    <ion-item>
-      <ion-label>Objetivo</ion-label>
-      <ion-select formControlName="objetivo" placeholder="Selecciona tu objetivo">
-        <ion-select-option value="Subir de peso">Subir de peso</ion-select-option>
-        <ion-select-option value="Bajar de peso">Bajar de peso</ion-select-option>
-        <ion-select-option value="Mantener peso">Mantener peso</ion-select-option>
-      </ion-select>
-    </ion-item>
+      <ion-item>
+        <ion-label>Objetivo</ion-label>
+        <ion-select formControlName="objetivo" placeholder="Selecciona tu objetivo">
+          <ion-select-option value="Subir de peso">Subir de peso</ion-select-option>
+          <ion-select-option value="Bajar de peso">Bajar de peso</ion-select-option>
+          <ion-select-option value="Mantener peso">Mantener peso</ion-select-option>
+        </ion-select>
+      </ion-item>
 
-    <ion-item>
-      <ion-label>Nivel de Actividad</ion-label>
-      <ion-select formControlName="nivelActividad" placeholder="Selecciona tu nivel de actividad">
-        <ion-select-option value="Sedentario">Sedentario</ion-select-option>
-        <ion-select-option value="Ligero">Ligero</ion-select-option>
-        <ion-select-option value="Moderado">Moderado</ion-select-option>
-        <ion-select-option value="Activo">Activo</ion-select-option>
-        <ion-select-option value="Muy activo">Muy activo</ion-select-option>
-      </ion-select>
-    </ion-item>
+      <ion-item>
+        <ion-label>Nivel de Actividad</ion-label>
+        <ion-select formControlName="nivelActividad" placeholder="Selecciona tu nivel de actividad">
+          <ion-select-option value="Sedentario">Sedentario</ion-select-option>
+          <ion-select-option value="Ligero">Ligero</ion-select-option>
+          <ion-select-option value="Moderado">Moderado</ion-select-option>
+          <ion-select-option value="Activo">Activo</ion-select-option>
+          <ion-select-option value="Muy activo">Muy activo</ion-select-option>
+        </ion-select>
+      </ion-item>
 
-    <ion-button expand="full" type="submit" [disabled]="profileForm.invalid">Guardar</ion-button>
-  </form>
+      <ion-button expand="full" type="submit" [disabled]="profileForm.invalid">Guardar</ion-button>
+    </form>
+  </div>
 </ion-content>
-

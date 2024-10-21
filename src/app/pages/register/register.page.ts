@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CustomValidators } from 'src/app/validators/custom-validators';
 
 @Component({
   selector: 'app-register',
@@ -22,12 +23,10 @@ export class RegisterPage {
     private formBuilder: FormBuilder // Inyectar FormBuilder
   ) {
     // Inicializar el formulario con validaciones
-    // src/app/pages/register/register.page.ts
-
     this.registerForm = this.formBuilder.group({
       nombre: ['', [Validators.required]], // Validación para el nombre
-      email: ['', [Validators.required, Validators.email]], // Validación para el correo
-      password: ['', [Validators.required, Validators.minLength(6)]], // Validación para la contraseña
+      email: ['', [Validators.required, CustomValidators.emailPattern()]], // Validación para el correo
+      password: ['', [Validators.required, Validators.minLength(6), CustomValidators.passwordStrength()]], // Validación para la contraseña
     });
   }
 

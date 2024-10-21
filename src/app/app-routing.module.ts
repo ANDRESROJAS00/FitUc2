@@ -20,16 +20,23 @@ const routes: Routes = [
   {
     path: 'complete-profile',
     loadChildren: () => import('./pages/complete-profile/complete-profile.module').then(m => m.CompleteProfilePageModule),
+    canActivate: [AuthGuard],
   },
   {
     path: 'profile',
     loadChildren: () => import('./pages/profile/profile.module').then(m => m.ProfilePageModule),
+    canActivate: [AuthGuard],
   },
   {
     path: 'alimentos',
     loadChildren: () => import('./pages/alimentos/alimentos.module').then(m => m.AlimentosPageModule),
+    canActivate: [AuthGuard],
   },
-
+  {
+    path: 'scanner',
+    loadChildren: () => import('./pages/scanner/scanner.module').then(m => m.ScannerPageModule),
+    canActivate: [AuthGuard],
+  },
   {
     path: '',
     redirectTo: 'login',
@@ -39,6 +46,8 @@ const routes: Routes = [
     path: '**',
     redirectTo: 'login',
   },
+  
+
 ];
 
 @NgModule({
