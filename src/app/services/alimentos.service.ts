@@ -8,8 +8,8 @@ import { SupabaseService } from './supabase.service';
   providedIn: 'root',
 })
 export class AlimentosService {
-  private supabaseUrl = environment.supabaseUrl;
-  private apiKey = environment.supabaseApiKey;
+  private supabaseUrl = environment.supabaseUrl; // URL de Supabase
+  private apiKey = environment.supabaseApiKey; // API Key de Supabase
   private headers = new HttpHeaders({
     apikey: this.apiKey,
     Authorization: `Bearer ${this.apiKey}`,
@@ -23,6 +23,7 @@ export class AlimentosService {
     return new Observable(observer => {
       this.supabaseService.getUser().then(user => {
         if (user) {
+          // Realizar una solicitud GET para obtener los alimentos del usuario
           this.http.get(`${this.supabaseUrl}/alimentos?select=*&id_usuario=eq.${user.id}`, { headers: this.headers })
             .subscribe(
               data => observer.next(data),
@@ -40,7 +41,7 @@ export class AlimentosService {
     return new Observable(observer => {
       this.supabaseService.getUser().then(user => {
         if (user) {
-          alimento.id_usuario = user.id;
+          alimento.id_usuario = user.id; // Asignar el ID del usuario al alimento
           this.supabaseService.addAlimento(alimento).then(response => {
             observer.next(response);
             observer.complete();
@@ -59,7 +60,8 @@ export class AlimentosService {
     return new Observable(observer => {
       this.supabaseService.getUser().then(user => {
         if (user) {
-          alimento.id_usuario = user.id;
+          alimento.id_usuario = user.id; // Asignar el ID del usuario al alimento
+          // Realizar una solicitud PATCH para actualizar el alimento
           this.http.patch(`${this.supabaseUrl}/alimentos?id_alimento=eq.${id}`, alimento, { headers: this.headers })
             .subscribe(
               data => observer.next(data),
@@ -77,6 +79,7 @@ export class AlimentosService {
     return new Observable(observer => {
       this.supabaseService.getUser().then(user => {
         if (user) {
+          // Realizar una solicitud DELETE para eliminar el alimento
           this.http.delete(`${this.supabaseUrl}/alimentos?id_alimento=eq.${id}&id_usuario=eq.${user.id}`, { headers: this.headers })
             .subscribe(
               data => observer.next(data),
@@ -88,7 +91,6 @@ export class AlimentosService {
       });
     });
   }
-
 
   // Registrar un alimento consumido
   registrarConsumo(idAlimento: number, cantidad: number): Observable<any> {
@@ -113,7 +115,6 @@ export class AlimentosService {
     });
   }
 
-
   // Obtener el total de calorías consumidas en el día
   obtenerCaloriasConsumidas(): Observable<number> {
     return new Observable(observer => {
@@ -131,15 +132,6 @@ export class AlimentosService {
       });
     });
   }
-
-
-
-
-
-
-
-
-
 }
 
 

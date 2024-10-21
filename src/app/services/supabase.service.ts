@@ -1,3 +1,5 @@
+// src/app/services/supabase.service.ts
+
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
@@ -5,15 +7,17 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
   providedIn: 'root',
 })
 export class SupabaseService {
-  private supabase: SupabaseClient;
+  private supabase: SupabaseClient; // Cliente de Supabase
 
   constructor() {
+    // Crear una instancia del cliente de Supabase
     this.supabase = createClient(
-      'https://ssnrbbrnjivwmhciwrht.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzbnJiYnJuaml2d21oY2l3cmh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg0Mjc5MTUsImV4cCI6MjA0NDAwMzkxNX0.wUXrxMqXNr2r6fkT_efQINeMh6pbKwWu3z6KETZwZl8'
+      'https://ssnrbbrnjivwmhciwrht.supabase.co', // URL de Supabase
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzbnJiYnJuaml2d21oY2l3cmh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg0Mjc5MTUsImV4cCI6MjA0NDAwMzkxNX0.wUXrxMqXNr2r6fkT_efQINeMh6pbKwWu3z6KETZwZl8' // API Key de Supabase
     );
   }
 
+  // Obtener el perfil del usuario por ID
   async getUserProfile(userId: string) {
     const { data, error } = await this.supabase
       .from('usuarios')
@@ -28,6 +32,7 @@ export class SupabaseService {
     return data;
   }
 
+  // Actualizar el perfil del usuario
   async updateUserProfile(profileData: any) {
     const { error } = await this.supabase
       .from('usuarios')
@@ -40,6 +45,7 @@ export class SupabaseService {
     }
   }
 
+  // Obtener el usuario autenticado
   async getUser() {
     const { data, error } = await this.supabase.auth.getUser();
     if (error) {
@@ -49,6 +55,7 @@ export class SupabaseService {
     return data.user;
   }
 
+  // Iniciar sesión con correo y contraseña
   async signIn(email: string, password: string) {
     const { error } = await this.supabase.auth.signInWithPassword({
       email,
@@ -60,6 +67,7 @@ export class SupabaseService {
     }
   }
 
+  // Registrar un nuevo usuario
   async signUp(email: string, password: string, nombre: string) {
     const { data, error } = await this.supabase.auth.signUp({
       email,
@@ -83,6 +91,7 @@ export class SupabaseService {
     }
   }
 
+  // Cerrar sesión
   async signOut() {
     const { error } = await this.supabase.auth.signOut();
     if (error) {
@@ -91,6 +100,7 @@ export class SupabaseService {
     }
   }
 
+  // Verificar si el perfil del usuario está completo
   async isProfileComplete(userId: string): Promise<boolean> {
     const { data, error } = await this.supabase
       .from('usuarios')
@@ -113,8 +123,7 @@ export class SupabaseService {
     );
   }
 
-
-
+  // Agregar un nuevo alimento
   async addAlimento(alimento: any) {
     const { data, error } = await this.supabase
       .from('alimentos')
@@ -128,15 +137,7 @@ export class SupabaseService {
     return data;
   }
 
-
-
-
-
-
-
-
-
-  // src/app/services/supabase.service.ts
+  // Registrar el consumo de un alimento
   async registrarConsumo(consumo: any) {
     console.log('Registrando consumo:', consumo); // Log
     const { data, error } = await this.supabase
@@ -151,6 +152,7 @@ export class SupabaseService {
     return data;
   }
 
+  // Obtener el total de calorías consumidas en el día
   async obtenerCaloriasConsumidas(userId: string): Promise<number> {
     console.log('Obteniendo calorías consumidas para el usuario:', userId); // Log
 

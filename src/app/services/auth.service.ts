@@ -9,43 +9,47 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
-  private authState = new BehaviorSubject<boolean>(false); // Estado de autenticación
+  // Estado de autenticación del usuario
+  private authState = new BehaviorSubject<boolean>(false);
 
   constructor(
-    private supabaseService: SupabaseService,
-    private router: Router
+    private supabaseService: SupabaseService, // Servicio para interactuar con Supabase
+    private router: Router // Servicio para la navegación entre páginas
   ) {
-    this.checkAuthStatus(); // Verifica el estado de autenticación al iniciar
+    // Verifica el estado de autenticación al iniciar el servicio
+    this.checkAuthStatus();
   }
 
-   // Método para verificar el estado de autenticación de forma asíncrona
-   async checkAuthStatus() {
+  // Método para verificar el estado de autenticación de forma asíncrona
+  async checkAuthStatus() {
+    // Obtener el usuario actual desde Supabase
     const user = await this.supabaseService.getUser();
+    // Actualizar el estado de autenticación
     this.authState.next(!!user);
   }
 
-   // Devuelve el estado de autenticación como observable
-   getAuthState(): Observable<boolean> {
+  // Devuelve el estado de autenticación como observable
+  getAuthState(): Observable<boolean> {
     return this.authState.asObservable();
   }
 
   // Método para iniciar sesión
   async login(email: string, password: string) {
     try {
+      // Intentar iniciar sesión con el correo y la contraseña
       await this.supabaseService.signIn(email, password);
+      // Obtener el usuario actual desde Supabase
       const user = await this.supabaseService.getUser();
 
       if (user) {
-        // Verificamos si el perfil del usuario ya tiene los datos del IMC
-        const isProfileComplete = await this.supabaseService.isProfileComplete(
-          user.id
-        );
+        // Verificar si el perfil del usuario está completo
+        const isProfileComplete = await this.supabaseService.isProfileComplete(user.id);
 
         if (isProfileComplete) {
-          // Si el perfil está completo, redirige a "home"
+          // Si el perfil está completo, redirigir a la página de inicio
           this.router.navigate(['/home']);
         } else {
-          // Si no está completo, redirige a "complete-profile"
+          // Si el perfil no está completo, redirigir a la página de completar perfil
           this.router.navigate(['/complete-profile']);
         }
       }
@@ -58,18 +62,23 @@ export class AuthService {
   // Método para cerrar sesión
   async signOut() {
     try {
+      // Cerrar sesión en Supabase
       await this.supabaseService.signOut();
+      // Actualizar el estado de autenticación
       this.authState.next(false);
+      // Redirigir a la página de login
       this.router.navigate(['/login']);
     } catch (error) {
       console.error('Error signing out:', error);
     }
   }
 
-  // Método para cerrar sesión
+  // Método para cerrar sesión (duplicado, se puede eliminar)
   async logout() {
     try {
+      // Cerrar sesión en Supabase
       await this.supabaseService.signOut();
+      // Actualizar el estado de autenticación
       this.authState.next(false);
     } catch (error) {
       console.error('Error al cerrar sesión', error);
@@ -77,21 +86,16 @@ export class AuthService {
     }
   }
 
-
-   // Método para registrarse
-   async register(email: string, password: string, nombre: string) {
+  // Método para registrarse
+  async register(email: string, password: string, nombre: string) {
     try {
-      await this.supabaseService.signUp(email, password, nombre);  // Ahora acepta el nombre también
-      this.checkAuthStatus(); // Actualiza el estado de autenticación tras registrarse
+      // Registrar un nuevo usuario en Supabase
+      await this.supabaseService.signUp(email, password, nombre);
+      // Verificar el estado de autenticación tras registrarse
+      this.checkAuthStatus();
     } catch (error) {
       console.error('Error al registrarse', error);
       throw error;
     }
   }
-
-
-
-
-
-
 }

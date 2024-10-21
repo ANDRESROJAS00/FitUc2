@@ -16,11 +16,11 @@ export class RegisterPage {
   registerForm: FormGroup; // Declarar el formulario
 
   constructor(
-    private authService: AuthService,
-    private router: Router,
-    private alertController: AlertController,
-    private loadingController: LoadingController,
-    private formBuilder: FormBuilder // Inyectar FormBuilder
+    private authService: AuthService, // Inyectar AuthService para manejar la autenticación
+    private router: Router, // Inyectar Router para la navegación
+    private alertController: AlertController, // Inyectar AlertController para mostrar alertas
+    private loadingController: LoadingController, // Inyectar LoadingController para mostrar un indicador de carga
+    private formBuilder: FormBuilder // Inyectar FormBuilder para construir el formulario
   ) {
     // Inicializar el formulario con validaciones
     this.registerForm = this.formBuilder.group({
@@ -30,33 +30,41 @@ export class RegisterPage {
     });
   }
 
+  // Método para manejar el envío del formulario
   async onSubmit() {
+    // Verificar si el formulario es inválido
     if (this.registerForm.invalid) {
       this.presentAlert('Error', 'Por favor completa todos los campos.');
       return;
     }
 
+    // Mostrar un indicador de carga
     const loading = await this.loadingController.create({
       message: 'Creando cuenta...',
     });
     await loading.present();
 
     try {
+      // Intentar registrar al usuario con los valores del formulario
       await this.authService.register(
         this.registerForm.value.email,
         this.registerForm.value.password,
         this.registerForm.value.nombre // Pasar el nombre
       );
+      // Redirigir a la página de login si el registro es exitoso
       this.router.navigate(['/login']);
     } catch (error) {
+      // Mostrar un mensaje de error si el registro falla
       const errorMessage =
         (error as { message: string }).message || 'Error desconocido';
       this.presentAlert('Error al registrarse', errorMessage);
     } finally {
+      // Ocultar el indicador de carga
       loading.dismiss();
     }
   }
 
+  // Método para mostrar una alerta
   async presentAlert(header: string, message: string) {
     const alert = await this.alertController.create({
       header,

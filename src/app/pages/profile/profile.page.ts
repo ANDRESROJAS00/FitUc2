@@ -9,22 +9,25 @@ import { SupabaseService } from 'src/app/services/supabase.service';
   styleUrls: ['./profile.page.scss'],
 })
 export class ProfilePage implements OnInit {
-  userProfile: any;
-  caloriasRecomendadas: number = 0;
-  caloriasConsumidas: number = 0;
+  userProfile: any; // Declarar el perfil del usuario
+  caloriasRecomendadas: number = 0; // Declarar las calorías recomendadas
+  caloriasConsumidas: number = 0; // Declarar las calorías consumidas
 
   constructor(
-    private supabaseService: SupabaseService,
-    private alimentosService: AlimentosService
+    private supabaseService: SupabaseService, // Inyectar SupabaseService para interactuar con la base de datos
+    private alimentosService: AlimentosService // Inyectar AlimentosService para obtener las calorías consumidas
   ) {}
 
   async ngOnInit() {
+    // Obtener el usuario actual desde Supabase
     const user = await this.supabaseService.getUser();
 
     if (user) {
+      // Obtener el perfil del usuario desde Supabase
       const profile = await this.supabaseService.getUserProfile(user.id);
       this.userProfile = profile;
 
+      // Calcular las calorías recomendadas
       this.caloriasRecomendadas = this.calcularCalorias(
         profile.peso,
         profile.altura,
@@ -34,6 +37,7 @@ export class ProfilePage implements OnInit {
         profile.nivelActividad
       );
 
+      // Obtener las calorías consumidas
       this.alimentosService
         .obtenerCaloriasConsumidas()
         .subscribe((calorias) => {
@@ -42,6 +46,7 @@ export class ProfilePage implements OnInit {
     }
   }
 
+  // Método para calcular las calorías recomendadas
   calcularCalorias(
     peso: number,
     altura: number,

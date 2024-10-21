@@ -8,30 +8,32 @@ import { AlimentosService } from '../../services/alimentos.service';
   styleUrls: ['./alimentos.page.scss'],
 })
 export class AlimentosPage implements OnInit {
-  alimentos: any[] = [];
-  alimentoForm: FormGroup;
-  editMode = false;
-  alimentoId: number | null = null;
+  alimentos: any[] = []; // Declarar el array de alimentos
+  alimentoForm: FormGroup; // Declarar el formulario de alimentos
+  editMode = false; // Modo de edición
+  alimentoId: number | null = null; // ID del alimento a editar
 
   constructor(
-    private alimentosService: AlimentosService,
-    private formBuilder: FormBuilder
+    private alimentosService: AlimentosService, // Inyectar AlimentosService para interactuar con la base de datos
+    private formBuilder: FormBuilder // Inyectar FormBuilder para construir el formulario
   ) {
+    // Inicializar el formulario con validaciones
     this.alimentoForm = this.formBuilder.group({
-      nombre: ['', Validators.required],
-      calorias: [0, Validators.required],
-      proteinas: [0, Validators.required],
-      carbohidratos: [0, Validators.required],
-      grasas: [0, Validators.required],
-      porcion: [0, Validators.required],
+      nombre: ['', Validators.required], // Campo requerido para el nombre del alimento
+      calorias: [0, Validators.required], // Campo requerido para las calorías
+      proteinas: [0, Validators.required], // Campo requerido para las proteínas
+      carbohidratos: [0, Validators.required], // Campo requerido para los carbohidratos
+      grasas: [0, Validators.required], // Campo requerido para las grasas
+      porcion: [0, Validators.required], // Campo requerido para la porción
     });
   }
 
   ngOnInit() {
+    // Cargar los alimentos al inicializar el componente
     this.loadAlimentos();
   }
 
-  // Cargar alimentos desde Supabase
+  // Método para cargar los alimentos desde Supabase
   loadAlimentos() {
     this.alimentosService.getAlimentos().subscribe(
       (data) => {
@@ -43,14 +45,16 @@ export class AlimentosPage implements OnInit {
     );
   }
 
-  // Agregar o actualizar alimento
+  // Método para manejar el envío del formulario
   onSubmit() {
+    // Verificar si el formulario es inválido
     if (this.alimentoForm.invalid) {
       return;
     }
 
     const alimento = this.alimentoForm.value;
 
+    // Si está en modo de edición, actualizar el alimento
     if (this.editMode && this.alimentoId !== null) {
       this.alimentosService.updateAlimento(this.alimentoId, alimento).subscribe(
         () => {
@@ -62,6 +66,7 @@ export class AlimentosPage implements OnInit {
         }
       );
     } else {
+      // Si no está en modo de edición, agregar un nuevo alimento
       this.alimentosService.addAlimento(alimento).subscribe(
         (response) => {
           this.loadAlimentos();
@@ -77,14 +82,14 @@ export class AlimentosPage implements OnInit {
     }
   }
 
-  // Editar alimento
+  // Método para editar un alimento
   editAlimento(alimento: any) {
     this.editMode = true;
     this.alimentoId = alimento.id_alimento;
     this.alimentoForm.patchValue(alimento);
   }
 
-  // Eliminar alimento
+  // Método para eliminar un alimento
   deleteAlimento(id: number) {
     this.alimentosService.deleteAlimento(id).subscribe(
       () => {
@@ -96,6 +101,7 @@ export class AlimentosPage implements OnInit {
     );
   }
 
+  // Método para registrar el consumo de un alimento
   registrarConsumo(idAlimento: number, cantidad: number) {
     this.alimentosService
       .registrarConsumo(idAlimento, cantidad)
@@ -104,7 +110,7 @@ export class AlimentosPage implements OnInit {
       });
   }
 
-  // Reiniciar el formulario
+  // Método para reiniciar el formulario
   resetForm() {
     this.editMode = false;
     this.alimentoId = null;
@@ -114,7 +120,7 @@ export class AlimentosPage implements OnInit {
       proteinas: 0,
       carbohidratos: 0,
       grasas: 0,
-      procion: 0,
+      porcion: 0,
     });
   }
 }
