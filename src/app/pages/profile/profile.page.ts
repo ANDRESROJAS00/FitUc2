@@ -1,5 +1,6 @@
 // src/app/pages/profile/profile.page.ts
 import { Component, OnInit } from '@angular/core';
+import { AlimentosService } from 'src/app/services/alimentos.service';
 import { SupabaseService } from 'src/app/services/supabase.service';
 
 @Component({
@@ -10,8 +11,12 @@ import { SupabaseService } from 'src/app/services/supabase.service';
 export class ProfilePage implements OnInit {
   userProfile: any;
   caloriasRecomendadas: number = 0;
+  caloriasConsumidas: number = 0;
 
-  constructor(private supabaseService: SupabaseService) {}
+  constructor(
+    private supabaseService: SupabaseService,
+    private alimentosService: AlimentosService
+  ) {}
 
   async ngOnInit() {
     const user = await this.supabaseService.getUser();
@@ -26,15 +31,28 @@ export class ProfilePage implements OnInit {
         profile.edad,
         profile.sexo,
         profile.objetivo,
-        profile.nivelActividad // Nuevo parámetro
+        profile.nivelActividad
       );
+
+      this.alimentosService
+        .obtenerCaloriasConsumidas()
+        .subscribe((calorias) => {
+          this.caloriasConsumidas = calorias;
+        });
     }
   }
 
-  calcularCalorias(peso: number, altura: number, edad: number, sexo: string, objetivo: string, nivelActividad: string): number {
+  calcularCalorias(
+    peso: number,
+    altura: number,
+    edad: number,
+    sexo: string,
+    objetivo: string,
+    nivelActividad: string
+  ): number {
     // Calcular BMR usando la Mifflin-St Jeor Equation
-    let bmr = (10 * peso) + (6.25 * altura) - (5 * edad);
-    bmr += (sexo === 'Masculino') ? 5 : -161;
+    let bmr = 10 * peso + 6.25 * altura - 5 * edad;
+    bmr += sexo === 'Masculino' ? 5 : -161;
 
     // Ajustar BMR según el nivel de actividad física
     let factorActividad = 1.2; // Sedentario
@@ -68,6 +86,3 @@ export class ProfilePage implements OnInit {
     }
   }
 }
-
-
-

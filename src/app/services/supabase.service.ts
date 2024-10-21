@@ -112,4 +112,71 @@ export class SupabaseService {
       data?.nivelActividad
     );
   }
+
+
+
+  async addAlimento(alimento: any) {
+    const { data, error } = await this.supabase
+      .from('alimentos')
+      .insert(alimento)
+      .select(); // Asegúrate de que la respuesta incluya el ID del alimento
+
+    if (error) {
+      console.error('Error adding alimento:', error);
+      throw error;
+    }
+    return data;
+  }
+
+
+
+
+
+
+
+
+
+  // src/app/services/supabase.service.ts
+  async registrarConsumo(consumo: any) {
+    console.log('Registrando consumo:', consumo); // Log
+    const { data, error } = await this.supabase
+      .from('alimentos_consumidos')
+      .insert(consumo);
+
+    if (error) {
+      console.error('Error registrando consumo:', error);
+      throw error;
+    }
+    console.log('Consumo registrado:', data); // Log
+    return data;
+  }
+
+  async obtenerCaloriasConsumidas(userId: string): Promise<number> {
+    console.log('Obteniendo calorías consumidas para el usuario:', userId); // Log
+
+    const today = new Date().toISOString().split('T')[0];
+    const { data, error } = await this.supabase
+      .from('alimentos_consumidos')
+      .select(
+        `
+      cantidad,
+      alimentos (
+        calorias
+      )
+    `
+      )
+      .eq('id_usuario', userId)
+      .gte('fecha_consumo', `${today}T00:00:00`)
+      .lte('fecha_consumo', `${today}T23:59:59`);
+
+    if (error) {
+      console.error('Error obteniendo calorías consumidas:', error);
+      throw error;
+    }
+
+    console.log('Datos de calorías consumidas:', data); // Log
+    return data.reduce((total: number, consumo: any) => {
+      return total + consumo.cantidad * consumo.alimentos.calorias;
+    }, 0);
+  }
 }

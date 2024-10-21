@@ -34,10 +34,10 @@ export class AlimentosPage implements OnInit {
   // Cargar alimentos desde Supabase
   loadAlimentos() {
     this.alimentosService.getAlimentos().subscribe(
-      data => {
+      (data) => {
         this.alimentos = data;
       },
-      error => {
+      (error) => {
         console.error('Error loading alimentos:', error);
       }
     );
@@ -57,17 +57,20 @@ export class AlimentosPage implements OnInit {
           this.loadAlimentos();
           this.resetForm();
         },
-        error => {
+        (error) => {
           console.error('Error updating alimento:', error);
         }
       );
     } else {
       this.alimentosService.addAlimento(alimento).subscribe(
-        () => {
+        (response) => {
           this.loadAlimentos();
           this.resetForm();
+          // Registrar el alimento como consumido
+          const idAlimento = response[0].id_alimento; // Asegúrate de que la respuesta contenga el ID del alimento
+          this.registrarConsumo(idAlimento, 1); // Asume que la cantidad consumida es 1 por defecto
         },
-        error => {
+        (error) => {
           console.error('Error adding alimento:', error);
         }
       );
@@ -87,10 +90,18 @@ export class AlimentosPage implements OnInit {
       () => {
         this.loadAlimentos();
       },
-      error => {
+      (error) => {
         console.error('Error deleting alimento:', error);
       }
     );
+  }
+
+  registrarConsumo(idAlimento: number, cantidad: number) {
+    this.alimentosService
+      .registrarConsumo(idAlimento, cantidad)
+      .subscribe(() => {
+        console.log('Consumo registrado');
+      });
   }
 
   // Reiniciar el formulario
@@ -107,10 +118,3 @@ export class AlimentosPage implements OnInit {
     });
   }
 }
-
-
-
-
-
-
-

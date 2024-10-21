@@ -41,13 +41,14 @@ export class AlimentosService {
       this.supabaseService.getUser().then(user => {
         if (user) {
           alimento.id_usuario = user.id;
-          this.http.post(`${this.supabaseUrl}/alimentos`, alimento, { headers: this.headers })
-            .subscribe(
-              data => observer.next(data),
-              error => observer.error(error)
-            );
+          this.supabaseService.addAlimento(alimento).then(response => {
+            observer.next(response);
+            observer.complete();
+          }).catch(error => {
+            observer.error(error);
+          });
         } else {
-          observer.error('User not authenticated');
+          observer.error('Usuario no autenticado');
         }
       });
     });
@@ -87,6 +88,58 @@ export class AlimentosService {
       });
     });
   }
+
+
+  // Registrar un alimento consumido
+  registrarConsumo(idAlimento: number, cantidad: number): Observable<any> {
+    return new Observable(observer => {
+      this.supabaseService.getUser().then(user => {
+        if (user) {
+          const consumo = {
+            id_usuario: user.id,
+            id_alimento: idAlimento,
+            cantidad: cantidad,
+          };
+          this.supabaseService.registrarConsumo(consumo).then(response => {
+            observer.next(response);
+            observer.complete();
+          }).catch(error => {
+            observer.error(error);
+          });
+        } else {
+          observer.error('Usuario no autenticado');
+        }
+      });
+    });
+  }
+
+
+  // Obtener el total de calorías consumidas en el día
+  obtenerCaloriasConsumidas(): Observable<number> {
+    return new Observable(observer => {
+      this.supabaseService.getUser().then(user => {
+        if (user) {
+          this.supabaseService.obtenerCaloriasConsumidas(user.id).then(calorias => {
+            observer.next(calorias);
+            observer.complete();
+          }).catch(error => {
+            observer.error(error);
+          });
+        } else {
+          observer.error('Usuario no autenticado');
+        }
+      });
+    });
+  }
+
+
+
+
+
+
+
+
+
 }
 
 
