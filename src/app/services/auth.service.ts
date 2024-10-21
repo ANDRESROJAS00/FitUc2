@@ -18,16 +18,14 @@ export class AuthService {
     this.checkAuthStatus(); // Verifica el estado de autenticación al iniciar
   }
 
-  // Método para verificar el estado de autenticación de forma asíncrona
-  checkAuthStatus() {
-    this.supabaseService.getUser().then((user: any) => {
-      // Asegúrate de tipar el 'user'
-      this.authState.next(!!user); // Actualiza el estado según si hay un usuario autenticado
-    });
+   // Método para verificar el estado de autenticación de forma asíncrona
+   async checkAuthStatus() {
+    const user = await this.supabaseService.getUser();
+    this.authState.next(!!user);
   }
 
-  // Devuelve el estado de autenticación como observable
-  getAuthState(): Observable<boolean> {
+   // Devuelve el estado de autenticación como observable
+   getAuthState(): Observable<boolean> {
     return this.authState.asObservable();
   }
 
@@ -54,6 +52,17 @@ export class AuthService {
     } catch (error) {
       console.error('Error al iniciar sesión', error);
       throw error;
+    }
+  }
+
+  // Método para cerrar sesión
+  async signOut() {
+    try {
+      await this.supabaseService.signOut();
+      this.authState.next(false);
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error signing out:', error);
     }
   }
 
