@@ -17,13 +17,15 @@ export class CompleteProfilePage {
     private supabaseService: SupabaseService,
     private router: Router
   ) {
-    this.profileForm = this.formBuilder.group({
-      sexo: ['', Validators.required],
-      edad: ['', [Validators.required, Validators.min(1)]],
-      altura: ['', [Validators.required, Validators.min(1)]],
-      peso: ['', [Validators.required, Validators.min(1)]],
-      objetivo: ['', Validators.required],
-    });
+   // src/app/pages/complete-profile/complete-profile.page.ts
+this.profileForm = this.formBuilder.group({
+  sexo: ['', Validators.required],
+  edad: ['', [Validators.required, Validators.min(1)]],
+  altura: ['', [Validators.required, Validators.min(1)]],
+  peso: ['', [Validators.required, Validators.min(1)]],
+  objetivo: ['', Validators.required],
+  nivelActividad: ['', Validators.required], // Nuevo campo para nivel de actividad
+});
   }
 
   async onSubmit() {
@@ -31,7 +33,7 @@ export class CompleteProfilePage {
       return;
     }
 
-    const { sexo, edad, altura, peso, objetivo } = this.profileForm.value;
+    const { sexo, edad, altura, peso, objetivo, nivelActividad } = this.profileForm.value;
 
     const user = await this.supabaseService.getUser();
 
@@ -44,6 +46,7 @@ export class CompleteProfilePage {
         altura,
         peso,
         objetivo,
+        nivelActividad
       });
 
       // Redirige a 'home' después de que el perfil se haya completado

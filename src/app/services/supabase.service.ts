@@ -94,7 +94,7 @@ export class SupabaseService {
   async isProfileComplete(userId: string): Promise<boolean> {
     const { data, error } = await this.supabase
       .from('usuarios')
-      .select('peso, altura, edad, sexo, objetivo')
+      .select('peso, altura, edad, sexo, objetivo, nivelActividad')
       .eq('id_usuario', userId)
       .single();
 
@@ -108,7 +108,8 @@ export class SupabaseService {
       data.altura &&
       data.edad &&
       data.sexo &&
-      data.objetivo
+      data.objetivo &&
+      data?.nivelActividad
     );
   }
 }

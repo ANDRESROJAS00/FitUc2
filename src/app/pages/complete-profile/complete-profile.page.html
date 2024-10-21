@@ -1,3 +1,5 @@
+<!-- src/app/pages/complete-profile/complete-profile.page.html -->
+
 <ion-header>
   <ion-toolbar>
     <ion-title>Completa tu perfil</ion-title>
@@ -35,6 +37,17 @@
         <ion-select-option value="Subir de peso">Subir de peso</ion-select-option>
         <ion-select-option value="Bajar de peso">Bajar de peso</ion-select-option>
         <ion-select-option value="Mantener peso">Mantener peso</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Nivel de Actividad</ion-label>
+      <ion-select formControlName="nivelActividad" placeholder="Selecciona tu nivel de actividad">
+        <ion-select-option value="Sedentario">Sedentario</ion-select-option>
+        <ion-select-option value="Ligero">Ligero</ion-select-option>
+        <ion-select-option value="Moderado">Moderado</ion-select-option>
+        <ion-select-option value="Activo">Activo</ion-select-option>
+        <ion-select-option value="Muy activo">Muy activo</ion-select-option>
       </ion-select>
     </ion-item>
 
