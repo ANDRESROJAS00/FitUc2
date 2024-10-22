@@ -115,23 +115,32 @@ export class AlimentosService {
     });
   }
 
-  // Obtener el total de calorías consumidas en el día
-  obtenerCaloriasConsumidas(): Observable<number> {
-    return new Observable(observer => {
-      this.supabaseService.getUser().then(user => {
-        if (user) {
-          this.supabaseService.obtenerCaloriasConsumidas(user.id).then(calorias => {
-            observer.next(calorias);
-            observer.complete();
-          }).catch(error => {
-            observer.error(error);
-          });
-        } else {
-          observer.error('Usuario no autenticado');
-        }
-      });
+ // Obtener el total de calorías y macros consumidos en el día
+ obtenerCaloriasYMacrosConsumidos(): Observable<any> {
+  return new Observable(observer => {
+    this.supabaseService.getUser().then(user => {
+      if (user) {
+        this.supabaseService.obtenerCaloriasYMacrosConsumidos(user.id).then(result => {
+          observer.next(result);
+          observer.complete();
+        }).catch(error => {
+          observer.error(error);
+        });
+      } else {
+        observer.error('Usuario no autenticado');
+      }
     });
-  }
+  });
+}
+  
+  
+  
+
+
+
+
+
+
 }
 
 

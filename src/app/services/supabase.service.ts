@@ -18,19 +18,19 @@ export class SupabaseService {
   }
 
   // Obtener el perfil del usuario por ID
-  async getUserProfile(userId: string) {
-    const { data, error } = await this.supabase
-      .from('usuarios')
-      .select('*')
-      .eq('id_usuario', userId)
-      .single();
+async getUserProfile(userId: string) {
+  const { data, error } = await this.supabase
+    .from('usuarios')
+    .select('*')
+    .eq('id_usuario', userId)
+    .single();
 
-    if (error) {
-      console.error('Error fetching user profile:', error);
-      throw error;
-    }
-    return data;
+  if (error) {
+    console.error('Error fetching user profile:', error);
+    throw error;
   }
+  return data;
+}
 
   // Actualizar el perfil del usuario
   async updateUserProfile(profileData: any) {
@@ -100,28 +100,6 @@ export class SupabaseService {
     }
   }
 
-  // Verificar si el perfil del usuario está completo
-  async isProfileComplete(userId: string): Promise<boolean> {
-    const { data, error } = await this.supabase
-      .from('usuarios')
-      .select('peso, altura, edad, sexo, objetivo, nivelActividad')
-      .eq('id_usuario', userId)
-      .single();
-
-    if (error) {
-      console.error('Error checking profile completeness:', error);
-      throw error;
-    }
-
-    return !!(
-      data.peso &&
-      data.altura &&
-      data.edad &&
-      data.sexo &&
-      data.objetivo &&
-      data?.nivelActividad
-    );
-  }
 
   // Agregar un nuevo alimento
   async addAlimento(alimento: any) {
@@ -152,33 +130,45 @@ export class SupabaseService {
     return data;
   }
 
-  // Obtener el total de calorías consumidas en el día
-  async obtenerCaloriasConsumidas(userId: string): Promise<number> {
-    console.log('Obteniendo calorías consumidas para el usuario:', userId); // Log
+ // Obtener el total de calorías y macros consumidos en el día
+ async obtenerCaloriasYMacrosConsumidos(userId: string): Promise<any> {
+  console.log('Obteniendo calorías y macros consumidos para el usuario:', userId);
 
-    const today = new Date().toISOString().split('T')[0];
-    const { data, error } = await this.supabase
-      .from('alimentos_consumidos')
-      .select(
-        `
-      cantidad,
-      alimentos (
-        calorias
-      )
-    `
-      )
-      .eq('id_usuario', userId)
-      .gte('fecha_consumo', `${today}T00:00:00`)
-      .lte('fecha_consumo', `${today}T23:59:59`);
+  const today = new Date().toISOString().split('T')[0];
+  const { data, error } = await this.supabase
+    .from('alimentos_consumidos')
+    .select(
+      `
+    cantidad,
+    alimentos (
+      calorias,
+      proteinas,
+      carbohidratos,
+      grasas
+    )
+  `
+    )
+    .eq('id_usuario', userId)
+    .gte('fecha_consumo', `${today}T00:00:00`)
+    .lte('fecha_consumo', `${today}T23:59:59`);
 
-    if (error) {
-      console.error('Error obteniendo calorías consumidas:', error);
-      throw error;
-    }
-
-    console.log('Datos de calorías consumidas:', data); // Log
-    return data.reduce((total: number, consumo: any) => {
-      return total + consumo.cantidad * consumo.alimentos.calorias;
-    }, 0);
+  if (error) {
+    console.error('Error obteniendo calorías y macros consumidos:', error);
+    throw error;
   }
+
+  console.log('Datos de calorías y macros consumidos:', data);
+  const resultado = data.reduce(
+    (total: any, consumo: any) => {
+      total.calorias += consumo.cantidad * consumo.alimentos.calorias;
+      total.proteinas += consumo.cantidad * consumo.alimentos.proteinas;
+      total.carbohidratos += consumo.cantidad * consumo.alimentos.carbohidratos;
+      total.grasas += consumo.cantidad * consumo.alimentos.grasas;
+      return total;
+    },
+    { calorias: 0, proteinas: 0, carbohidratos: 0, grasas: 0 }
+  );
+
+  return resultado;
+}
 }

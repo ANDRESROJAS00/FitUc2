@@ -26,15 +26,16 @@ export class HomePage {
   goToScanner() {
     this.router.navigate(['/scanner']);
   }
-  
+
+  // Función para redirigir a la página de completar perfil (IMC)
+  goToCompleteProfile() {
+    this.router.navigate(['/complete-profile']);
+  }
 
   // Función para cerrar sesión
-  logout() {
-    this.authService.logout().then(() => {
+  signOut() {
+    this.authService.signOut().then(() => {
       this.router.navigate(['/login']);
     });
   }
-
-
 }
-

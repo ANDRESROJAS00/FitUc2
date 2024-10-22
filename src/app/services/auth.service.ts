@@ -36,22 +36,28 @@ export class AuthService {
   // Método para iniciar sesión
   async login(email: string, password: string) {
     try {
+      console.log('Iniciando sesión con:', email);
       // Intentar iniciar sesión con el correo y la contraseña
       await this.supabaseService.signIn(email, password);
+      console.log('Inicio de sesión exitoso');
+
       // Obtener el usuario actual desde Supabase
       const user = await this.supabaseService.getUser();
+      console.log('Usuario obtenido:', user);
 
       if (user) {
-        // Verificar si el perfil del usuario está completo
-        const isProfileComplete = await this.supabaseService.isProfileComplete(user.id);
+        // Obtener el perfil del usuario
+        const profile = await this.supabaseService.getUserProfile(user.id);
+        console.log('Perfil del usuario obtenido:', profile);
 
-        if (isProfileComplete) {
-          // Si el perfil está completo, redirigir a la página de inicio
-          this.router.navigate(['/home']);
-        } else {
-          // Si el perfil no está completo, redirigir a la página de completar perfil
-          this.router.navigate(['/complete-profile']);
+        if (!profile) {
+          console.error('User profile not found');
+          throw new Error('User profile not found');
         }
+
+        // Redirigir a la página de inicio
+        console.log('Redirigiendo a /home');
+        this.router.navigate(['/home']);
       }
     } catch (error) {
       console.error('Error al iniciar sesión', error);
@@ -70,19 +76,6 @@ export class AuthService {
       this.router.navigate(['/login']);
     } catch (error) {
       console.error('Error signing out:', error);
-    }
-  }
-
-  // Método para cerrar sesión (duplicado, se puede eliminar)
-  async logout() {
-    try {
-      // Cerrar sesión en Supabase
-      await this.supabaseService.signOut();
-      // Actualizar el estado de autenticación
-      this.authState.next(false);
-    } catch (error) {
-      console.error('Error al cerrar sesión', error);
-      throw error;
     }
   }
 

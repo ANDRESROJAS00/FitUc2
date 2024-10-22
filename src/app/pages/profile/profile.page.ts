@@ -1,4 +1,5 @@
 // src/app/pages/profile/profile.page.ts
+
 import { Component, OnInit } from '@angular/core';
 import { AlimentosService } from 'src/app/services/alimentos.service';
 import { SupabaseService } from 'src/app/services/supabase.service';
@@ -9,25 +10,25 @@ import { SupabaseService } from 'src/app/services/supabase.service';
   styleUrls: ['./profile.page.scss'],
 })
 export class ProfilePage implements OnInit {
-  userProfile: any; // Declarar el perfil del usuario
-  caloriasRecomendadas: number = 0; // Declarar las calorías recomendadas
-  caloriasConsumidas: number = 0; // Declarar las calorías consumidas
+  userProfile: any;
+  caloriasRecomendadas: number = 0;
+  caloriasConsumidas: number = 0;
+  proteinasConsumidas: number = 0;
+  carbohidratosConsumidos: number = 0;
+  grasasConsumidas: number = 0;
 
   constructor(
-    private supabaseService: SupabaseService, // Inyectar SupabaseService para interactuar con la base de datos
-    private alimentosService: AlimentosService // Inyectar AlimentosService para obtener las calorías consumidas
+    private supabaseService: SupabaseService,
+    private alimentosService: AlimentosService
   ) {}
 
   async ngOnInit() {
-    // Obtener el usuario actual desde Supabase
     const user = await this.supabaseService.getUser();
 
     if (user) {
-      // Obtener el perfil del usuario desde Supabase
       const profile = await this.supabaseService.getUserProfile(user.id);
       this.userProfile = profile;
 
-      // Calcular las calorías recomendadas
       this.caloriasRecomendadas = this.calcularCalorias(
         profile.peso,
         profile.altura,
@@ -37,16 +38,17 @@ export class ProfilePage implements OnInit {
         profile.nivelActividad
       );
 
-      // Obtener las calorías consumidas
       this.alimentosService
-        .obtenerCaloriasConsumidas()
-        .subscribe((calorias) => {
-          this.caloriasConsumidas = calorias;
+        .obtenerCaloriasYMacrosConsumidos()
+        .subscribe((result) => {
+          this.caloriasConsumidas = result.calorias;
+          this.proteinasConsumidas = result.proteinas;
+          this.carbohidratosConsumidos = result.carbohidratos;
+          this.grasasConsumidas = result.grasas;
         });
     }
   }
 
-  // Método para calcular las calorías recomendadas
   calcularCalorias(
     peso: number,
     altura: number,
@@ -55,12 +57,10 @@ export class ProfilePage implements OnInit {
     objetivo: string,
     nivelActividad: string
   ): number {
-    // Calcular BMR usando la Mifflin-St Jeor Equation
     let bmr = 10 * peso + 6.25 * altura - 5 * edad;
     bmr += sexo === 'Masculino' ? 5 : -161;
 
-    // Ajustar BMR según el nivel de actividad física
-    let factorActividad = 1.2; // Sedentario
+    let factorActividad = 1.2;
     switch (nivelActividad) {
       case 'Ligero':
         factorActividad = 1.375;
@@ -77,17 +77,15 @@ export class ProfilePage implements OnInit {
     }
 
     let caloriasTotales = bmr * factorActividad;
-
-    // Añadir el Efecto Térmico de los Alimentos (TEF)
     caloriasTotales *= 1.1;
 
-    // Ajustar según el objetivo
     if (objetivo === 'Subir de peso') {
-      return caloriasTotales * 1.1;
+      caloriasTotales *= 1.1;
     } else if (objetivo === 'Bajar de peso') {
-      return caloriasTotales * 0.9;
-    } else {
-      return caloriasTotales;
+      caloriasTotales *= 0.9;
     }
+
+    return parseFloat(caloriasTotales.toFixed(2));
   }
 }
+

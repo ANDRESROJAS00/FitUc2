@@ -4,7 +4,7 @@
   <ion-toolbar>
     <ion-title>Inicio</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="logout()">
+      <ion-button (click)="signOut()">
         <ion-icon name="log-out-outline" class="logout-icon"></ion-icon>
         Cerrar sesión
       </ion-button>
@@ -47,6 +47,19 @@
     </ion-card-header>
     <ion-card-content>
       Escanea el código de barras de un alimento para obtener información nutricional.
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Nueva tarjeta para el IMC -->
+  <ion-card (click)="goToCompleteProfile()">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="body-outline"></ion-icon>
+        Calcular IMC
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      Completa tu perfil para calcular tu Índice de Masa Corporal (IMC).
     </ion-card-content>
   </ion-card>
   

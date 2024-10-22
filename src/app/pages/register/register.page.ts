@@ -30,20 +30,19 @@ export class RegisterPage {
     });
   }
 
-  // Método para manejar el envío del formulario
   async onSubmit() {
     // Verificar si el formulario es inválido
     if (this.registerForm.invalid) {
       this.presentAlert('Error', 'Por favor completa todos los campos.');
       return;
     }
-
+  
     // Mostrar un indicador de carga
     const loading = await this.loadingController.create({
       message: 'Creando cuenta...',
     });
     await loading.present();
-
+  
     try {
       // Intentar registrar al usuario con los valores del formulario
       await this.authService.register(

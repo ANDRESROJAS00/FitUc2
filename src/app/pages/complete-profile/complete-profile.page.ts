@@ -28,19 +28,18 @@ export class CompleteProfilePage {
     });
   }
 
-  // Método para manejar el envío del formulario
   async onSubmit() {
     // Verificar si el formulario es inválido
     if (this.profileForm.invalid) {
       return;
     }
-
+  
     // Extraer los valores del formulario
     const { sexo, edad, altura, peso, objetivo, nivelActividad } = this.profileForm.value;
-
+  
     // Obtener el usuario actual desde Supabase
     const user = await this.supabaseService.getUser();
-
+  
     if (user) {
       // Actualiza el perfil en la base de datos
       await this.supabaseService.updateUserProfile({
@@ -52,7 +51,7 @@ export class CompleteProfilePage {
         objetivo,
         nivelActividad
       });
-
+  
       // Redirige a 'home' después de que el perfil se haya completado
       this.router.navigate(['/home']);
     }
