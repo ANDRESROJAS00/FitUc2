@@ -1,32 +1,18 @@
-/* src/app/pages/scanner/scanner.page.scss */
+/* Hide all elements */
+body.barcode-scanner-active {
+  visibility: hidden;
+  --background: transparent;
+  --ion-background-color: transparent;
+}
 
-.scanner-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  
-  ion-item {
-    width: 100%;
-    max-width: 400px;
-    margin-bottom: 20px;
-  }
-  
-  .scan-button {
-    width: 100%;
-    max-width: 400px;
-    margin-top: 20px;
-  }
-  
-  .scanner-info {
-    width: 100%;
-    max-width: 400px;
-    margin-top: 20px;
-    text-align: center;
-  }
+/* Show only the barcode scanner modal */
+.barcode-scanner-modal {
+  visibility: visible;
+}
 
-  .back-button {
-    --color: #ffffff; /* Ícono de volver atrás en blanco */
+@media (prefers-color-scheme: dark) {
+  .barcode-scanner-modal {
+    --background: transparent;
+    --ion-background-color: transparent;
   }
+}

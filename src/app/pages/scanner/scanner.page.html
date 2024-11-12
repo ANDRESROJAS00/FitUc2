@@ -1,23 +1,26 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home" class="back-button"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Scanner</ion-title>
+    <ion-title>Escaneo Nutricional</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <div class="scanner-container">
-    <ion-item>
-      <ion-label position="floating">Código de Barras</ion-label>
-      <ion-input type="text"></ion-input>
-    </ion-item>
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-label position="floating">Código de Barras</ion-label>
+    <ion-input [(ngModel)]="barcode" type="text"></ion-input>
+  </ion-item>
+  <ion-button expand="full" (click)="startScan()">Scanear Código de Barras</ion-button>
+  <ion-button expand="full" color="danger" *ngIf="scanning" (click)="stopScan()">Detener Escaneo</ion-button>
 
-    <ion-button expand="full" color="primary" class="scan-button">Scanear Código de Barras</ion-button>
+  <div *ngIf="productData">
+    <h2>{{ productData.product_name }}</h2>
+    <p><strong>Calorías:</strong> {{ productData.nutriments.energy_value }} {{ productData.nutriments.energy_unit }}</p>
+    <p><strong>Proteínas:</strong> {{ productData.nutriments.proteins_value }} {{ productData.nutriments.proteins_unit }}</p>
+    <p><strong>Grasas:</strong> {{ productData.nutriments.fat_value }} {{ productData.nutriments.fat_unit }}</p>
+    <p><strong>Carbohidratos:</strong> {{ productData.nutriments.carbohydrates_value }} {{ productData.nutriments.carbohydrates_unit }}</p>
+  </div>
 
-    <ion-text color="medium" class="scanner-info">
-      <p>Para escanear el código de barras de un alimento, ingresa el código en el campo de arriba y presiona el botón "Scanear Código de Barras". La aplicación buscará la información nutricional del alimento en nuestra base de datos.</p>
-    </ion-text>
+  <div *ngIf="productData === null && !scanning">
+    <p>Producto no encontrado o sin datos nutricionales disponibles.</p>
   </div>
 </ion-content>

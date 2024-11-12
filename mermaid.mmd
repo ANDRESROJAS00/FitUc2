@@ -1,0 +1,36 @@
+sequenceDiagram
+    actor Usuario
+    participant AP as AlimentosPage
+    participant AS as AlimentosService
+    participant SS as SupabaseService
+    participant AuthS as AuthService
+    participant PP as ProfilePage
+
+    Usuario ->> AP: click en "Agregar Alimento"
+    AP ->> AP: onSubmit()
+    AP ->> AuthS: checkAuthStatus()
+    AuthS ->> SS: getUser()
+    SS ->> AuthS: return user
+    AuthS ->> AP: return auth status
+
+    AP ->> AS: addAlimento(alimento)
+    AS ->> SS: insertAlimento(alimento)
+    SS ->> SS: Inserta el alimento en la base de datos
+    SS ->> AS: Resultado de la inserción
+    AS ->> AP: Resultado de la inserción
+    AP ->> Usuario: Muestra el resultado
+
+    Usuario ->> PP: click en "Ver Perfil"
+    PP ->> AuthS: checkAuthStatus()
+    AuthS ->> SS: getUser()
+    SS ->> AuthS: return user
+    AuthS ->> PP: return auth status
+
+    PP ->> SS: getUserProfile(userId)
+    SS ->> SS: fetch profile data from database
+    SS ->> PP: return profile data
+    PP ->> Usuario: Muestra perfil y datos de consumo
+
+    Usuario ->> PP: ingresa peso y altura
+    PP ->> PP: calcular IMC = peso / (altura * altura)
+    PP ->> Usuario: Muestra resultado del IMC
