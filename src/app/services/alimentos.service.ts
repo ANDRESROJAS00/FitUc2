@@ -8,8 +8,8 @@ import { SupabaseService } from './supabase.service';
   providedIn: 'root',
 })
 export class AlimentosService {
-  private supabaseUrl = environment.supabaseUrl; // URL de Supabase
-  private apiKey = environment.supabaseApiKey; // API Key de Supabase
+  private SUPABASEURL = environment.SUPABASEURL; // URL de Supabase
+  private apiKey = environment.SUPABASEAPIKEY; // API Key de Supabase
   private headers = new HttpHeaders({
     apikey: this.apiKey,
     Authorization: `Bearer ${this.apiKey}`,
@@ -24,7 +24,7 @@ export class AlimentosService {
       this.supabaseService.getUser().then(user => {
         if (user) {
           // Realizar una solicitud GET para obtener los alimentos del usuario
-          this.http.get(`${this.supabaseUrl}/alimentos?select=*&id_usuario=eq.${user.id}`, { headers: this.headers })
+          this.http.get(`${this.SUPABASEURL}/alimentos?select=*&id_usuario=eq.${user.id}`, { headers: this.headers })
             .subscribe(
               data => observer.next(data),
               error => observer.error(error)
@@ -62,7 +62,7 @@ export class AlimentosService {
         if (user) {
           alimento.id_usuario = user.id; // Asignar el ID del usuario al alimento
           // Realizar una solicitud PATCH para actualizar el alimento
-          this.http.patch(`${this.supabaseUrl}/alimentos?id_alimento=eq.${id}`, alimento, { headers: this.headers })
+          this.http.patch(`${this.SUPABASEURL}/alimentos?id_alimento=eq.${id}`, alimento, { headers: this.headers })
             .subscribe(
               data => observer.next(data),
               error => observer.error(error)
@@ -80,7 +80,7 @@ export class AlimentosService {
       this.supabaseService.getUser().then(user => {
         if (user) {
           // Realizar una solicitud DELETE para eliminar el alimento
-          this.http.delete(`${this.supabaseUrl}/alimentos?id_alimento=eq.${id}&id_usuario=eq.${user.id}`, { headers: this.headers })
+          this.http.delete(`${this.SUPABASEURL}/alimentos?id_alimento=eq.${id}&id_usuario=eq.${user.id}`, { headers: this.headers })
             .subscribe(
               data => observer.next(data),
               error => observer.error(error)
