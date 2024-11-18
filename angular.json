@@ -35,7 +35,7 @@
             "scripts": []
           },
           "configurations": {
-            "production": {
+            "PRODUCTION": {
               "budgets": [
                 {
                   "type": "initial",
@@ -68,13 +68,13 @@
               "progress": false
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "PRODUCTION"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
-            "production": {
-              "buildTarget": "app:build:production"
+            "PRODUCTION": {
+              "buildTarget": "app:build:PRODUCTION"
             },
             "development": {
               "buildTarget": "app:build:development"
