@@ -1,7 +1,8 @@
 // src/app/pages/home/home.page.ts
+
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth.service';  // Importa AuthService
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -10,23 +11,31 @@ import { AuthService } from 'src/app/services/auth.service';  // Importa AuthSer
 })
 export class HomePage {
 
-  constructor(private readonly router: Router, private readonly authService: AuthService) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   // Función para redirigir a la página de perfil
   goToProfile() {
     this.router.navigate(['/profile']);
   }
 
-  // Función para redirigir a la página de alimentos
   goToAlimentos() {
     this.router.navigate(['/alimentos']);
   }
 
+  // Función para redirigir a la página del escáner
+  goToScanner() {
+    this.router.navigate(['/scanner']);
+  }
+
+  // Función para redirigir a la página de completar perfil (IMC)
+  goToCompleteProfile() {
+    this.router.navigate(['/complete-profile']);
+  }
+
   // Función para cerrar sesión
-  async logout() {
-    await this.authService.logout();  // Llama a la función logout en AuthService
-    this.router.navigate(['/login']);  // Redirige al usuario a la página de login
+  signOut() {
+    this.authService.signOut().then(() => {
+      this.router.navigate(['/login']);
+    });
   }
 }
-
-

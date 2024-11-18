@@ -1,5 +1,7 @@
 // src/app/pages/profile/profile.page.ts
+
 import { Component, OnInit } from '@angular/core';
+import { AlimentosService } from 'src/app/services/alimentos.service';
 import { SupabaseService } from 'src/app/services/supabase.service';
 
 @Component({
@@ -10,8 +12,15 @@ import { SupabaseService } from 'src/app/services/supabase.service';
 export class ProfilePage implements OnInit {
   userProfile: any;
   caloriasRecomendadas: number = 0;
+  caloriasConsumidas: number = 0;
+  proteinasConsumidas: number = 0;
+  carbohidratosConsumidos: number = 0;
+  grasasConsumidas: number = 0;
 
-  constructor(private readonly supabaseService: SupabaseService) {}
+  constructor(
+    private supabaseService: SupabaseService,
+    private alimentosService: AlimentosService
+  ) {}
 
   async ngOnInit() {
     const user = await this.supabaseService.getUser();
@@ -25,29 +34,58 @@ export class ProfilePage implements OnInit {
         profile.altura,
         profile.edad,
         profile.sexo,
-        profile.objetivo
+        profile.objetivo,
+        profile.nivelActividad
       );
+
+      this.alimentosService
+        .obtenerCaloriasYMacrosConsumidos()
+        .subscribe((result) => {
+          this.caloriasConsumidas = result.calorias;
+          this.proteinasConsumidas = result.proteinas;
+          this.carbohidratosConsumidos = result.carbohidratos;
+          this.grasasConsumidas = result.grasas;
+        });
     }
   }
 
-  calcularCalorias(peso: number, altura: number, edad: number, sexo: string, objetivo: string): number {
-    let caloriasBase = (10 * peso) + (6.25 * altura) - (5 * edad);
+  calcularCalorias(
+    peso: number,
+    altura: number,
+    edad: number,
+    sexo: string,
+    objetivo: string,
+    nivelActividad: string
+  ): number {
+    let bmr = 10 * peso + 6.25 * altura - 5 * edad;
+    bmr += sexo === 'Masculino' ? 5 : -161;
 
-    if (sexo === 'Masculino') {
-      caloriasBase += 5;
-    } else {
-      caloriasBase -= 161;
+    let factorActividad = 1.2;
+    switch (nivelActividad) {
+      case 'Ligero':
+        factorActividad = 1.375;
+        break;
+      case 'Moderado':
+        factorActividad = 1.55;
+        break;
+      case 'Activo':
+        factorActividad = 1.725;
+        break;
+      case 'Muy activo':
+        factorActividad = 1.9;
+        break;
     }
+
+    let caloriasTotales = bmr * factorActividad;
+    caloriasTotales *= 1.1;
 
     if (objetivo === 'Subir de peso') {
-      return caloriasBase * 1.1;
+      caloriasTotales *= 1.1;
     } else if (objetivo === 'Bajar de peso') {
-      return caloriasBase * 0.9;
-    } else {
-      return caloriasBase;
+      caloriasTotales *= 0.9;
     }
+
+    return parseFloat(caloriasTotales.toFixed(2));
   }
 }
-
-
 

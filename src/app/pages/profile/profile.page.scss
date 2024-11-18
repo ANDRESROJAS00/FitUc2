@@ -1,0 +1,50 @@
+/* src/app/pages/profile/profile.page.scss */
+
+ion-card {
+    margin: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff; /* Fondo blanco */
+    color: #000000; /* Texto negro */
+  }
+  
+  ion-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #3880ff; /* Fondo azul */
+    color: #ffffff; /* Texto blanco */
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+  
+  ion-card-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #ffffff; /* Texto blanco */
+  }
+  
+  ion-card-content {
+    padding: 20px;
+  }
+  
+  ion-card-content p {
+    margin: 10px 0;
+    font-size: 1em;
+    color: #333333; /* Texto gris oscuro */
+  }
+  
+  ion-card-content p strong {
+    color: #3880ff; /* Texto azul */
+  }
+  
+  ion-progress-bar {
+    margin-top: 10px;
+    height: 20px;
+    border-radius: 10px;
+  }
+
+
+  .back-button {
+    --color: #ffffff; /* Ícono de volver atrás en blanco */
+  }

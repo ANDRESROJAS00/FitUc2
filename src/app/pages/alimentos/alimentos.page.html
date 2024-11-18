@@ -2,6 +2,9 @@
 
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" class="back-button"></ion-back-button>
+    </ion-buttons>
     <ion-title>Gestión de Alimentos</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -13,7 +16,7 @@
       <ion-label position="floating">Nombre del Alimento</ion-label>
       <ion-input formControlName="nombre" type="text"></ion-input>
     </ion-item>
-
+    
     <ion-item>
       <ion-label position="floating">Calorías</ion-label>
       <ion-input formControlName="calorias" type="number"></ion-input>
@@ -39,9 +42,7 @@
       <ion-input formControlName="porcion" type="text"></ion-input>
     </ion-item>
 
-    <ion-button expand="full" type="submit"
-      >{{ editMode ? 'Actualizar' : 'Agregar' }} Alimento</ion-button
-    >
+    <ion-button expand="full" type="submit">{{ editMode ? 'Actualizar' : 'Agregar' }} Alimento</ion-button>
   </form>
 
   <!-- Lista de alimentos -->
@@ -55,25 +56,10 @@
         <p>Grasas: {{ alimento.grasas }}</p>
         <p>Porción: {{ alimento.porcion }}</p>
       </ion-label>
-      <ion-button
-        (click)="editAlimento(alimento)"
-        (keydown)="handleKeydown($event, 'edit', alimento)"
-        fill="outline"
-        slot="end"
-        tabindex="0"
-      >
-        Editar
-      </ion-button>
-
-      <ion-button
-        (click)="deleteAlimento(alimento.id_alimento)"
-        (keydown)="handleKeydown($event, 'delete', alimento.id_alimento)"
-        color="danger"
-        slot="end"
-        tabindex="0"
-      >
-        Eliminar
-      </ion-button>
+      <ion-button (click)="editAlimento(alimento)" fill="outline" slot="end">Editar</ion-button>
+      <ion-button (click)="deleteAlimento(alimento.id_alimento)" color="danger" slot="end">Eliminar</ion-button>
     </ion-item>
   </ion-list>
 </ion-content>
+
+

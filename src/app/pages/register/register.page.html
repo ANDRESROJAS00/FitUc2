@@ -1,3 +1,5 @@
+<!-- src/app/pages/register/register.page.html -->
+
 <ion-header>
   <ion-toolbar>
     <ion-title>Registrarse</ion-title>
@@ -5,43 +7,46 @@
 </ion-header>
 
 <ion-content>
-  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-    
-    <!-- Campo para el nombre -->
-    <ion-item>
-      <ion-label position="floating">Nombre</ion-label>
-      <ion-input formControlName="nombre" type="text" required></ion-input>
-    </ion-item>
+  <div class="register-container">
+    <img src="assets/img/fitduoc.png" alt="Logo" class="logo" />
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <!-- Campo para el nombre -->
+      <ion-item>
+        <ion-label position="floating">Nombre</ion-label>
+        <ion-input formControlName="nombre" type="text" required></ion-input>
+      </ion-item>
 
-    <!-- Mensajes de error para el nombre -->
-    <ion-text color="danger" *ngIf="registerForm.controls['nombre'].invalid && registerForm.controls['nombre'].touched">
-      <p *ngIf="registerForm.controls['nombre'].errors?.['required']">El nombre es obligatorio.</p>
-    </ion-text>
+      <!-- Mensajes de error para el nombre -->
+      <ion-text color="danger" *ngIf="registerForm.controls['nombre'].invalid && registerForm.controls['nombre'].touched">
+        <p *ngIf="registerForm.controls['nombre'].errors?.['required']">El nombre es obligatorio.</p>
+      </ion-text>
 
-    <ion-item>
-      <ion-label position="floating">Correo</ion-label>
-      <ion-input formControlName="email" type="email" required></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label position="floating">Correo</ion-label>
+        <ion-input formControlName="email" type="email" required></ion-input>
+      </ion-item>
 
-    <!-- Mensajes de error para el email -->
-    <ion-text color="danger" *ngIf="registerForm.controls['email'].invalid && registerForm.controls['email'].touched">
-      <p *ngIf="registerForm.controls['email'].errors?.['required']">El correo es obligatorio.</p>
-      <p *ngIf="registerForm.controls['email'].errors?.['email']">El formato del correo es inválido.</p>
-    </ion-text>
+      <!-- Mensajes de error para el email -->
+      <ion-text color="danger" *ngIf="registerForm.controls['email'].invalid && registerForm.controls['email'].touched">
+        <p *ngIf="registerForm.controls['email'].errors?.['required']">El correo es obligatorio.</p>
+        <p *ngIf="registerForm.controls['email'].errors?.['emailPattern']">El formato del correo es inválido.</p>
+      </ion-text>
 
-    <ion-item>
-      <ion-label position="floating">Contraseña</ion-label>
-      <ion-input formControlName="password" type="password" required></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label position="floating">Contraseña</ion-label>
+        <ion-input formControlName="password" type="password" required></ion-input>
+      </ion-item>
 
-    <!-- Mensajes de error para la contraseña -->
-    <ion-text color="danger" *ngIf="registerForm.controls['password'].invalid && registerForm.controls['password'].touched">
-      <p *ngIf="registerForm.controls['password'].errors?.['required']">La contraseña es obligatoria.</p>
-      <p *ngIf="registerForm.controls['password'].errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</p>
-    </ion-text>
+      <!-- Mensajes de error para la contraseña -->
+      <ion-text color="danger" *ngIf="registerForm.controls['password'].invalid && registerForm.controls['password'].touched">
+        <p *ngIf="registerForm.controls['password'].errors?.['required']">La contraseña es obligatoria.</p>
+        <p *ngIf="registerForm.controls['password'].errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</p>
+        <p *ngIf="registerForm.controls['password'].errors?.['passwordStrength']">La contraseña debe tener al menos una mayúscula, una minúscula, un número y un símbolo.</p>
+      </ion-text>
 
-    <ion-button expand="full" type="submit" [disabled]="registerForm.invalid">Crear cuenta</ion-button>
-    <ion-button expand="full" fill="clear" routerLink="/login">Volver</ion-button>
-  </form>
+      <ion-button expand="full" type="submit" [disabled]="registerForm.invalid">Crear cuenta</ion-button>
+      <ion-button expand="full" fill="clear" routerLink="/login">Volver</ion-button>
+    </form>
+  </div>
 </ion-content>
 

@@ -4,16 +4,22 @@
   <ion-toolbar>
     <ion-title>Inicio</ion-title>
     <ion-buttons slot="end">
-      <!-- Botón para cerrar sesión -->
-      <ion-button (click)="logout()">Cerrar sesión</ion-button>
+      <ion-button (click)="signOut()">
+        <ion-icon name="log-out-outline" class="logout-icon"></ion-icon>
+        Cerrar sesión
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
+  
   <ion-card (click)="goToProfile()">
     <ion-card-header>
-      <ion-card-title>Perfil del Usuario</ion-card-title>
+      <ion-card-title>
+        <ion-icon name="person-circle-outline"></ion-icon>
+        Perfil del Usuario
+      </ion-card-title>
     </ion-card-header>
     <ion-card-content>
       Consulta los datos de tu perfil, calorías recomendadas y más.
@@ -22,11 +28,39 @@
 
   <ion-card (click)="goToAlimentos()">
     <ion-card-header>
-      <ion-card-title>Gestión de Alimentos</ion-card-title>
+      <ion-card-title>
+        <ion-icon name="fast-food-outline"></ion-icon>
+        Gestión de Alimentos
+      </ion-card-title>
     </ion-card-header>
     <ion-card-content>
       Añade, modifica o elimina alimentos que consumes.
     </ion-card-content>
   </ion-card>
-</ion-content>
 
+  <ion-card (click)="goToScanner()">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="barcode-outline"></ion-icon>
+        Scanner
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      Escanea el código de barras de un alimento para obtener información nutricional.
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Nueva tarjeta para el IMC -->
+  <ion-card (click)="goToCompleteProfile()">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="body-outline"></ion-icon>
+        Calcular IMC
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      Completa tu perfil para calcular tu Índice de Masa Corporal (IMC).
+    </ion-card-content>
+  </ion-card>
+  
+</ion-content>

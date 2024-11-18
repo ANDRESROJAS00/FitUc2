@@ -9,23 +9,35 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly authState = new BehaviorSubject<boolean>(false); // Estado de autenticación
+  // Estado de autenticación del usuario
+  private authState = new BehaviorSubject<boolean>(false);
 
   constructor(
-    private readonly supabaseService: SupabaseService,
-    private readonly router: Router
+    private supabaseService: SupabaseService, // Servicio para interactuar con Supabase
+    private router: Router // Servicio para la navegación entre páginas
   ) {
-    this.checkAuthStatus(); // Verifica el estado de autenticación al iniciar
+    // Verifica el estado de autenticación al iniciar el servicio
+    this.checkAuthStatus();
   }
 
- // Método para verificar el estado de autenticación
- checkAuthStatus() {
-  this.supabaseService.getUser().then(user => {
-    this.authState.next(!!user);  // Actualiza el estado según si hay un usuario autenticado
-  }).catch(() => {
-    this.authState.next(false);  // Si falla, considera al usuario como no autenticado
-  });
-}
+  // Método para verificar el estado de autenticación de forma asíncrona
+  async checkAuthStatus() {
+<<<<<<< HEAD
+    // Obtener el usuario actual desde Supabase
+    const user = await this.supabaseService.getUser();
+    // Actualizar el estado de autenticación
+    this.authState.next(!!user);
+=======
+    try {
+      // Obtener el usuario actual desde Supabase
+      const user = await this.supabaseService.getUser();
+      // Actualizar el estado de autenticación
+      this.authState.next(!!user);
+    } catch (error) {
+      this.authState.next(false);
+    }
+>>>>>>> 40b8d8c (Inicial commit)
+  }
 
   // Devuelve el estado de autenticación como observable
   getAuthState(): Observable<boolean> {
@@ -35,23 +47,38 @@ export class AuthService {
   // Método para iniciar sesión
   async login(email: string, password: string) {
     try {
+      console.log('Iniciando sesión con:', email);
+      // Intentar iniciar sesión con el correo y la contraseña
       await this.supabaseService.signIn(email, password);
+      console.log('Inicio de sesión exitoso');
+
+<<<<<<< HEAD
+      // Obtener el usuario actual desde Supabase
       const user = await this.supabaseService.getUser();
+      console.log('Usuario obtenido:', user);
 
       if (user) {
-        // Verificamos si el perfil del usuario ya tiene los datos del IMC
-        const isProfileComplete = await this.supabaseService.isProfileComplete(
-          user.id
-        );
+        // Obtener el perfil del usuario
+        const profile = await this.supabaseService.getUserProfile(user.id);
+        console.log('Perfil del usuario obtenido:', profile);
 
-        if (isProfileComplete) {
-          // Si el perfil está completo, redirige a "home"
-          this.router.navigate(['/home']);
-        } else {
-          // Si no está completo, redirige a "complete-profile"
-          this.router.navigate(['/complete-profile']);
+        if (!profile) {
+          console.error('User profile not found');
+          throw new Error('User profile not found');
         }
+
+        // Redirigir a la página de inicio
+        console.log('Redirigiendo a /home');
+        this.router.navigate(['/home']);
       }
+=======
+      // Verificar el estado de autenticación tras iniciar sesión
+      await this.checkAuthStatus();
+
+      // Redirigir a la página de inicio
+      console.log('Redirigiendo a /home');
+      this.router.navigate(['/home']);
+>>>>>>> 40b8d8c (Inicial commit)
     } catch (error) {
       console.error('Error al iniciar sesión', error);
       throw error;
@@ -59,21 +86,30 @@ export class AuthService {
   }
 
   // Método para cerrar sesión
-  async logout() {
+  async signOut() {
     try {
+      // Cerrar sesión en Supabase
       await this.supabaseService.signOut();
+      // Actualizar el estado de autenticación
       this.authState.next(false);
+      // Redirigir a la página de login
+      this.router.navigate(['/login']);
     } catch (error) {
-      console.error('Error al cerrar sesión', error);
-      throw error;
+      console.error('Error signing out:', error);
     }
   }
 
   // Método para registrarse
   async register(email: string, password: string, nombre: string) {
     try {
-      await this.supabaseService.signUp(email, password, nombre); // Ahora acepta el nombre también
-      this.checkAuthStatus(); // Actualiza el estado de autenticación tras registrarse
+      // Registrar un nuevo usuario en Supabase
+      await this.supabaseService.signUp(email, password, nombre);
+      // Verificar el estado de autenticación tras registrarse
+<<<<<<< HEAD
+      this.checkAuthStatus();
+=======
+      await this.checkAuthStatus();
+>>>>>>> 40b8d8c (Inicial commit)
     } catch (error) {
       console.error('Error al registrarse', error);
       throw error;

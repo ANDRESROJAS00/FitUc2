@@ -4,9 +4,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { AlimentosPageRoutingModule } from './alimentos-routing.module';
+import { ScannerPageRoutingModule } from './scanner-routing.module';
 
-import { AlimentosPage } from './alimentos.page';
+import { ScannerPage } from './scanner.page';
 
 @NgModule({
   imports: [
@@ -14,8 +14,8 @@ import { AlimentosPage } from './alimentos.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    AlimentosPageRoutingModule
+    ScannerPageRoutingModule
   ],
-  declarations: [AlimentosPage]
+  declarations: [ScannerPage]
 })
-export class AlimentosPageModule {}
+export class ScannerPageModule {}
