@@ -10,6 +10,7 @@
     <ion-input [(ngModel)]="barcode" type="text"></ion-input>
   </ion-item>
   <ion-button expand="full" (click)="startScan()">Scanear Código de Barras</ion-button>
+  <ion-button expand="full" color="primary" (click)="searchProduct()">Buscar Producto</ion-button>
   <ion-button expand="full" color="danger" *ngIf="scanning" (click)="stopScan()">Detener Escaneo</ion-button>
 
   <div *ngIf="productData">

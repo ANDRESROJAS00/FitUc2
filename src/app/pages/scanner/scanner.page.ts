@@ -4,7 +4,7 @@ import {
   BarcodeFormat,
 } from '@capacitor-mlkit/barcode-scanning';
 import { OpenFoodFactsService } from 'src/app/services/openfoodfacts.service';
-
+import { Camera } from '@capacitor/camera';
 
 @Component({
   selector: 'app-scanner',
@@ -21,6 +21,15 @@ export class ScannerPage implements OnInit {
   ngOnInit() {}
 
   async startScan() {
+    const status = await Camera.checkPermissions();
+    if (status.camera !== 'granted') {
+      const result = await Camera.requestPermissions();
+      if (result.camera !== 'granted') {
+        console.error('Camera permission not granted');
+        return;
+      }
+    }
+
     document.querySelector('body')?.classList.add('barcode-scanner-active');
     this.scanning = true;
 
