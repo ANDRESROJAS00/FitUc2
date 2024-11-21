@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +17,12 @@ export class AuthGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Observable<boolean | UrlTree> {
     return this.authService.getAuthState().pipe(
-      map((isAuthenticated) => {
+      tap(isAuthenticated => {
+        if (!isAuthenticated) {
+          console.warn('Access denied - Redirecting to login');
+        }
+      }),
+      map(isAuthenticated => {
         if (isAuthenticated) {
           return true;
         } else {

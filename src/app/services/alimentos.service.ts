@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { SupabaseService } from './supabase.service';
+import { switchMap, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -20,34 +21,88 @@ export class AlimentosService {
 
   // Obtener todos los alimentos del usuario autenticado
   getAlimentos(): Observable<any> {
-    return new Observable(observer => {
-      this.supabaseService.getUser().then(user => {
+    return from(this.supabaseService.getUser()).pipe(
+      switchMap(user => {
         if (user) {
-          // Realizar una solicitud GET para obtener los alimentos del usuario
-          this.http.get(`${this.SUPABASEURL}/alimentos?select=*&id_usuario=eq.${user.id}`, { headers: this.headers })
-            .subscribe(
-              data => observer.next(data),
-              error => observer.error(error)
-            );
+          return this.http.get(`${this.SUPABASEURL}/alimentos?select=*&id_usuario=eq.${user.id}`, { headers: this.headers });
         } else {
-          observer.error('User not authenticated');
+          throw new Error('User not authenticated');
         }
-      });
-    });
+      }),
+      catchError(error => {
+        console.error(error);
+        throw error;
+      })
+    );
   }
 
   // Insertar un nuevo alimento
-  addAlimento(alimento: any): Observable<any> {
+  insertarAlimento(alimento: any): Observable<any> {
+    return from(this.supabaseService.getUser()).pipe(
+      switchMap(user => {
+        if (user) {
+          alimento.id_usuario = user.id; // Asignar el ID del usuario al alimento
+          return this.http.post(`${this.SUPABASEURL}/alimentos`, alimento, { headers: this.headers });
+        } else {
+          throw new Error('User not authenticated');
+        }
+      }),
+      catchError(error => {
+        console.error(error);
+        throw error;
+      })
+    );
+  }
+
+  // Actualizar un alimento existente
+  updateAlimento(id: number, alimento: any): Observable<any> {
+    return from(this.supabaseService.getUser()).pipe(
+      switchMap(user => {
+        if (user) {
+          alimento.id_usuario = user.id; // Asignar el ID del usuario al alimento
+          return this.http.patch(`${this.SUPABASEURL}/alimentos?id_alimento=eq.${id}`, alimento, { headers: this.headers });
+        } else {
+          throw new Error('User not authenticated');
+        }
+      }),
+      catchError(error => {
+        console.error(error);
+        throw error;
+      })
+    );
+  }
+
+  // Eliminar un alimento por ID
+  deleteAlimento(id: number): Observable<any> {
+    return from(this.supabaseService.getUser()).pipe(
+      switchMap(user => {
+        if (user) {
+          return this.http.delete(`${this.SUPABASEURL}/alimentos?id_alimento=eq.${id}&id_usuario=eq.${user.id}`, { headers: this.headers });
+        } else {
+          throw new Error('User not authenticated');
+        }
+      }),
+      catchError(error => {
+        console.error(error);
+        throw error;
+      })
+    );
+  }
+
+  // Obtener el total de calorías y macros consumidos en el día
+  obtenerCaloriasYMacrosConsumidos(): Observable<any> {
     return new Observable(observer => {
       this.supabaseService.getUser().then(user => {
         if (user) {
-          alimento.id_usuario = user.id; // Asignar el ID del usuario al alimento
-          this.supabaseService.addAlimento(alimento).then(response => {
-            observer.next(response);
-            observer.complete();
-          }).catch(error => {
-            observer.error(error);
-          });
+          this.supabaseService
+            .obtenerCaloriasYMacrosConsumidos(user.id)
+            .then(result => {
+              observer.next(result);
+              observer.complete();
+            })
+            .catch(error => {
+              observer.error(error);
+            });
         } else {
           observer.error('Usuario no autenticado');
         }
@@ -55,95 +110,31 @@ export class AlimentosService {
     });
   }
 
-  // Actualizar un alimento existente
-  updateAlimento(id: number, alimento: any): Observable<any> {
-    return new Observable(observer => {
-      this.supabaseService.getUser().then(user => {
-        if (user) {
-          alimento.id_usuario = user.id; // Asignar el ID del usuario al alimento
-          // Realizar una solicitud PATCH para actualizar el alimento
-          this.http.patch(`${this.SUPABASEURL}/alimentos?id_alimento=eq.${id}`, alimento, { headers: this.headers })
-            .subscribe(
-              data => observer.next(data),
-              error => observer.error(error)
-            );
-        } else {
-          observer.error('User not authenticated');
-        }
-      });
-    });
+  // Agregar un nuevo alimento
+  addAlimento(alimento: any): Observable<any> {
+    return this.insertarAlimento(alimento);
   }
 
-  // Eliminar un alimento por ID
-  deleteAlimento(id: number): Observable<any> {
-    return new Observable(observer => {
-      this.supabaseService.getUser().then(user => {
-        if (user) {
-          // Realizar una solicitud DELETE para eliminar el alimento
-          this.http.delete(`${this.SUPABASEURL}/alimentos?id_alimento=eq.${id}&id_usuario=eq.${user.id}`, { headers: this.headers })
-            .subscribe(
-              data => observer.next(data),
-              error => observer.error(error)
-            );
-        } else {
-          observer.error('User not authenticated');
-        }
-      });
-    });
-  }
-
-  // Registrar un alimento consumido
+  // Registrar el consumo de un alimento
   registrarConsumo(idAlimento: number, cantidad: number): Observable<any> {
-    return new Observable(observer => {
-      this.supabaseService.getUser().then(user => {
+    return from(this.supabaseService.getUser()).pipe(
+      switchMap(user => {
         if (user) {
           const consumo = {
             id_usuario: user.id,
             id_alimento: idAlimento,
             cantidad: cantidad,
+            fecha: new Date().toISOString(),
           };
-          this.supabaseService.registrarConsumo(consumo).then(response => {
-            observer.next(response);
-            observer.complete();
-          }).catch(error => {
-            observer.error(error);
-          });
+          return this.http.post(`${this.SUPABASEURL}/consumos`, consumo, { headers: this.headers });
         } else {
-          observer.error('Usuario no autenticado');
+          throw new Error('User not authenticated');
         }
-      });
-    });
+      }),
+      catchError(error => {
+        console.error(error);
+        throw error;
+      })
+    );
   }
-
- // Obtener el total de calorías y macros consumidos en el día
- obtenerCaloriasYMacrosConsumidos(): Observable<any> {
-  return new Observable(observer => {
-    this.supabaseService.getUser().then(user => {
-      if (user) {
-        this.supabaseService.obtenerCaloriasYMacrosConsumidos(user.id).then(result => {
-          observer.next(result);
-          observer.complete();
-        }).catch(error => {
-          observer.error(error);
-        });
-      } else {
-        observer.error('Usuario no autenticado');
-      }
-    });
-  });
 }
-  
-  
-  
-
-
-
-
-
-
-}
-
-
-
-
-

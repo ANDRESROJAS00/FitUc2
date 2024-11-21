@@ -1,27 +1,32 @@
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
     <ion-title>Escaneo Nutricional</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-item>
-    <ion-label position="floating">Código de Barras</ion-label>
-    <ion-input [(ngModel)]="barcode" type="text"></ion-input>
-  </ion-item>
-  <ion-button expand="full" (click)="startScan()">Scanear Código de Barras</ion-button>
-  <ion-button expand="full" color="primary" (click)="searchProduct()">Buscar Producto</ion-button>
-  <ion-button expand="full" color="danger" *ngIf="scanning" (click)="stopScan()">Detener Escaneo</ion-button>
+  <div class="scanner-container">
+    <ion-item>
+      <ion-label position="floating">Código de Barras</ion-label>
+      <ion-input [(ngModel)]="barcode" type="text"></ion-input>
+    </ion-item>
+    <ion-button expand="full" (click)="startScan()">Scanear Código de Barras</ion-button>
+    <ion-button expand="full" color="primary" (click)="searchProduct()">Buscar Producto</ion-button>
+    <ion-button expand="full" color="danger" *ngIf="scanning" (click)="stopScan()">Detener Escaneo</ion-button>
 
-  <div *ngIf="productData">
-    <h2>{{ productData.product_name }}</h2>
-    <p><strong>Calorías:</strong> {{ productData.nutriments.energy_value }} {{ productData.nutriments.energy_unit }}</p>
-    <p><strong>Proteínas:</strong> {{ productData.nutriments.proteins_value }} {{ productData.nutriments.proteins_unit }}</p>
-    <p><strong>Grasas:</strong> {{ productData.nutriments.fat_value }} {{ productData.nutriments.fat_unit }}</p>
-    <p><strong>Carbohidratos:</strong> {{ productData.nutriments.carbohydrates_value }} {{ productData.nutriments.carbohydrates_unit }}</p>
-  </div>
+    <div *ngIf="productData" class="product-data">
+      <h2>{{ productData.product_name }}</h2>
+      <p><strong>Calorías:</strong> {{ productData.nutriments.energy_value }} {{ productData.nutriments.energy_unit }}</p>
+      <p><strong>Proteínas:</strong> {{ productData.nutriments.proteins_value }} {{ productData.nutriments.proteins_unit }}</p>
+      <p><strong>Grasas:</strong> {{ productData.nutriments.fat_value }} {{ productData.nutriments.fat_unit }}</p>
+      <p><strong>Carbohidratos:</strong> {{ productData.nutriments.carbohydrates_value }} {{ productData.nutriments.carbohydrates_unit }}</p>
+    </div>
 
-  <div *ngIf="productData === null && !scanning">
-    <p>Producto no encontrado o sin datos nutricionales disponibles.</p>
+    <div *ngIf="productData === null && !scanning" class="no-product-data">
+      <p>Producto no encontrado o sin datos nutricionales disponibles.</p>
+    </div>
   </div>
 </ion-content>

@@ -17,161 +17,201 @@ export class SupabaseService {
     );
   }
 
+  // Método privado para manejar errores
+  private handleError(error: any) {
+    console.error('Error:', error);
+    throw error;
+  }
+
   // Obtener el perfil del usuario por ID
   async getUserProfile(userId: string) {
-    const { data, error } = await this.supabase
-      .from('usuarios')
-      .select('*')
-      .eq('id_usuario', userId)
-      .single();
+    try {
+      const { data, error } = await this.supabase
+        .from('usuarios')
+        .select('*')
+        .eq('id_usuario', userId)
+        .single();
 
-    if (error) {
-      console.error('Error fetching user profile:', error);
-      throw error;
+      if (error) {
+        this.handleError(error);
+      }
+      return data;
+    } catch (error) {
+      this.handleError(error);
     }
-    return data;
   }
 
   // Actualizar el perfil del usuario
   async updateUserProfile(profileData: any) {
-    const { error } = await this.supabase
-      .from('usuarios')
-      .update(profileData)
-      .eq('id_usuario', profileData.id_usuario);
+    try {
+      const { error } = await this.supabase
+        .from('usuarios')
+        .update(profileData)
+        .eq('id_usuario', profileData.id_usuario);
 
-    if (error) {
-      console.error('Error updating user profile:', error);
-      throw error;
+      if (error) {
+        this.handleError(error);
+      }
+    } catch (error) {
+      this.handleError(error);
     }
   }
 
   // Obtener el usuario autenticado
   async getUser() {
-    const { data, error } = await this.supabase.auth.getUser();
-    if (error) {
-      console.error('Error getting user:', error);
-      throw error;
+    try {
+      const { data, error } = await this.supabase.auth.getUser();
+      if (error) {
+        this.handleError(error);
+      }
+      return data?.user || null;
+    } catch (error) {
+      this.handleError(error);
     }
-    return data.user;
+    return null;
   }
 
   // Iniciar sesión con correo y contraseña
   async signIn(email: string, password: string) {
-    const { error } = await this.supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) {
-      console.error('Error signing in:', error);
-      throw error;
+    try {
+      const { error } = await this.supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) {
+        this.handleError(error);
+      }
+    } catch (error) {
+      this.handleError(error);
     }
   }
 
   // Registrar un nuevo usuario
   async signUp(email: string, password: string, nombre: string) {
-    const { data, error } = await this.supabase.auth.signUp({
-      email,
-      password,
-    });
-    if (error) {
-      console.error('Error signing up:', error);
-      throw error;
-    }
-
-    const userId = data.user?.id;
-    if (userId) {
-      const { error: profileError } = await this.supabase
-        .from('usuarios')
-        .insert({ id_usuario: userId, nombre, email });
-
-      if (profileError) {
-        console.error('Error creating user profile:', profileError);
-        throw profileError;
+    try {
+      const { data, error } = await this.supabase.auth.signUp({
+        email,
+        password,
+      });
+      if (error) {
+        this.handleError(error);
       }
+
+      const userId = data.user?.id;
+      if (userId) {
+        const { error: profileError } = await this.supabase
+          .from('usuarios')
+          .insert({ id_usuario: userId, nombre, email });
+
+        if (profileError) {
+          this.handleError(profileError);
+        }
+      }
+    } catch (error) {
+      this.handleError(error);
     }
   }
 
   // Cerrar sesión
   async signOut() {
-    const { error } = await this.supabase.auth.signOut();
-    if (error) {
-      console.error('Error signing out:', error);
-      throw error;
+    try {
+      const { error } = await this.supabase.auth.signOut();
+      if (error) {
+        this.handleError(error);
+      }
+    } catch (error) {
+      this.handleError(error);
     }
   }
 
   // Agregar un nuevo alimento
   async addAlimento(alimento: any) {
-    const { data, error } = await this.supabase
-      .from('alimentos')
-      .insert(alimento)
-      .select(); // Asegúrate de que la respuesta incluya el ID del alimento
+    try {
+      const { data, error } = await this.supabase
+        .from('alimentos')
+        .insert(alimento)
+        .select(); // Asegúrate de que la respuesta incluya el ID del alimento
 
-    if (error) {
-      console.error('Error adding alimento:', error);
-      throw error;
+      if (error) {
+        this.handleError(error);
+      }
+      return data;
+    } catch (error) {
+      this.handleError(error);
     }
-    return data;
+    return null;
   }
 
   // Registrar el consumo de un alimento
   async registrarConsumo(consumo: any) {
-    console.log('Registrando consumo:', consumo); // Log
-    const { data, error } = await this.supabase
-      .from('alimentos_consumidos')
-      .insert(consumo);
+    try {
+      console.log('Registrando consumo:', consumo); // Log
+      const { data, error } = await this.supabase
+        .from('alimentos_consumidos')
+        .insert(consumo);
 
-    if (error) {
-      console.error('Error registrando consumo:', error);
-      throw error;
+      if (error) {
+        this.handleError(error);
+      }
+      console.log('Consumo registrado:', data); // Log
+      return data;
+    } catch (error) {
+      this.handleError(error);
     }
-    console.log('Consumo registrado:', data); // Log
-    return data;
+    return null;
   }
 
   // Obtener el total de calorías y macros consumidos en el día
   async obtenerCaloriasYMacrosConsumidos(userId: string): Promise<any> {
-    console.log(
-      'Obteniendo calorías y macros consumidos para el usuario:',
-      userId
-    );
+    try {
+      console.log(
+        'Obteniendo calorías y macros consumidos para el usuario:',
+        userId
+      );
 
-    const today = new Date().toISOString().split('T')[0];
-    const { data, error } = await this.supabase
-      .from('alimentos_consumidos')
-      .select(
-        `
-    cantidad,
-    alimentos (
-      calorias,
-      proteinas,
-      carbohidratos,
-      grasas
-    )
-  `
-      )
-      .eq('id_usuario', userId)
-      .gte('fecha_consumo', `${today}T00:00:00`)
-      .lte('fecha_consumo', `${today}T23:59:59`);
+      const today = new Date().toISOString().split('T')[0];
+      const { data, error } = await this.supabase
+        .from('alimentos_consumidos')
+        .select(
+          `
+        cantidad,
+        alimentos (
+          calorias,
+          proteinas,
+          carbohidratos,
+          grasas
+        )
+      `
+        )
+        .eq('id_usuario', userId)
+        .gte('fecha_consumo', `${today}T00:00:00`)
+        .lte('fecha_consumo', `${today}T23:59:59`);
 
-    if (error) {
-      console.error('Error obteniendo calorías y macros consumidos:', error);
-      throw error;
+      if (error) {
+        this.handleError(error);
+      }
+
+      console.log('Datos de calorías y macros consumidos:', data);
+      if (!data) {
+        return { calorias: 0, proteinas: 0, carbohidratos: 0, grasas: 0 };
+      }
+
+      const resultado = data.reduce(
+        (total: any, consumo: any) => {
+          total.calorias += consumo.cantidad * consumo.alimentos.calorias;
+          total.proteinas += consumo.cantidad * consumo.alimentos.proteinas;
+          total.carbohidratos +=
+            consumo.cantidad * consumo.alimentos.carbohidratos;
+          total.grasas += consumo.cantidad * consumo.alimentos.grasas;
+          return total;
+        },
+        { calorias: 0, proteinas: 0, carbohidratos: 0, grasas: 0 }
+      );
+
+      return resultado;
+    } catch (error) {
+      this.handleError(error);
     }
-
-    console.log('Datos de calorías y macros consumidos:', data);
-    const resultado = data.reduce(
-      (total: any, consumo: any) => {
-        total.calorias += consumo.cantidad * consumo.alimentos.calorias;
-        total.proteinas += consumo.cantidad * consumo.alimentos.proteinas;
-        total.carbohidratos +=
-          consumo.cantidad * consumo.alimentos.carbohidratos;
-        total.grasas += consumo.cantidad * consumo.alimentos.grasas;
-        return total;
-      },
-      { calorias: 0, proteinas: 0, carbohidratos: 0, grasas: 0 }
-    );
-
-    return resultado;
+    return { calorias: 0, proteinas: 0, carbohidratos: 0, grasas: 0 };
   }
 }
