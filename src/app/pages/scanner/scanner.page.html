@@ -13,9 +13,7 @@
       <ion-label position="floating">Código de Barras</ion-label>
       <ion-input [(ngModel)]="barcode" type="text"></ion-input>
     </ion-item>
-    <ion-button expand="full" (click)="startScan()">Scanear Código de Barras</ion-button>
-    <ion-button expand="full" color="primary" (click)="searchProduct()">Buscar Producto</ion-button>
-    <ion-button expand="full" color="danger" *ngIf="scanning" (click)="stopScan()">Detener Escaneo</ion-button>
+    <ion-button expand="full" (click)="scan()">Scanear Código de Barras</ion-button>
 
     <div *ngIf="productData" class="product-data">
       <h2>{{ productData.product_name }}</h2>
@@ -25,7 +23,7 @@
       <p><strong>Carbohidratos:</strong> {{ productData.nutriments.carbohydrates_value }} {{ productData.nutriments.carbohydrates_unit }}</p>
     </div>
 
-    <div *ngIf="productData === null && !scanning" class="no-product-data">
+    <div *ngIf="productData === null && barcodes.length > 0" class="no-product-data">
       <p>Producto no encontrado o sin datos nutricionales disponibles.</p>
     </div>
   </div>
