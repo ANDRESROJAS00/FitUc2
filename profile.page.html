@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" class="back-button"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Perfil del Usuario</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="userProfile">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ userProfile.nombre }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Nombre:</strong> {{ userProfile.nombre }}</p>
+        <p><strong>Email:</strong> {{ userProfile.email }}</p>
+        <p><strong>Edad:</strong> {{ userProfile.edad }} años</p>
+        <p><strong>Altura:</strong> {{ userProfile.altura }} cm</p>
+        <p><strong>Peso:</strong> {{ userProfile.peso }} kg</p>
+        <p><strong>Sexo:</strong> {{ userProfile.sexo }}</p>
+        <p><strong>Objetivo:</strong> {{ userProfile.objetivo }}</p>
+        <p><strong>Nivel de Actividad:</strong> {{ userProfile.nivelActividad }}</p>
+        <p><strong>Calorías recomendadas:</strong> {{ caloriasRecomendadas }} kcal</p>
+        <p><strong>Calorías consumidas:</strong> {{ macronutrientesAcumulados.calorias }} kcal</p>
+        <p><strong>Proteínas consumidas:</strong> {{ macronutrientesAcumulados.proteinas }} g</p>
+        <p><strong>Carbohidratos consumidos:</strong> {{ macronutrientesAcumulados.carbohidratos }} g</p>
+        <p><strong>Grasas consumidas:</strong> {{ macronutrientesAcumulados.grasas }} g</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
