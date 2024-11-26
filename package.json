@@ -43,7 +43,6 @@
     "save": "^2.9.0",
     "tslib": "^2.3.0",
     "win": "^0.0.1",
-    "win-node-env": "^0.6.1",
     "zone.js": "~0.14.2"
   },
   "devDependencies": {
