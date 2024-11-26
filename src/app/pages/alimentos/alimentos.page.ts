@@ -115,7 +115,7 @@ export class AlimentosPage implements OnInit {
       .registrarConsumo(idAlimento, cantidad)
       .subscribe(() => {
         console.log('Consumo registrado'); // Log
-        this.alimentosService.notificarCambioEnAlimentosConsumidos();
+        //this.alimentosService.notificarCambioEnAlimentosConsumidos();
       });
   }
 
