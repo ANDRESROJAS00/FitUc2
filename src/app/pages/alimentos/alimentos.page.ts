@@ -37,6 +37,7 @@ export class AlimentosPage implements OnInit {
   loadAlimentos() {
     this.alimentosService.getAlimentos().subscribe(
       (data) => {
+        console.log('Alimentos cargados:', data); // Log
         this.alimentos = data;
       },
       (error) => {
@@ -53,32 +54,37 @@ export class AlimentosPage implements OnInit {
     }
 
     const alimento = this.alimentoForm.value;
+    console.log('Enviando formulario de alimento:', alimento); // Log
 
     // Si está en modo de edición, actualizar el alimento
     if (this.editMode && this.alimentoId !== null) {
-      this.alimentosService.updateAlimento(this.alimentoId, alimento).subscribe(
-        () => {
+      this.alimentosService.updateAlimento(this.alimentoId, alimento).subscribe({
+        next: () => {
+          console.log('Alimento actualizado'); // Log
           this.loadAlimentos();
           this.resetForm();
         },
-        (error) => {
+        error: (error: any) => {
           console.error('Error updating alimento:', error);
         }
-      );
+      });
     } else {
       // Si no está en modo de edición, agregar un nuevo alimento
-      this.alimentosService.addAlimento(alimento).subscribe(
-        (response) => {
+      this.alimentosService.addAlimento(alimento).subscribe({
+        next: (response: any) => {
+          console.log('Alimento agregado:', response); // Log
           this.loadAlimentos();
           this.resetForm();
           // Registrar el alimento como consumido
-          const idAlimento = response[0].id_alimento; // Asegúrate de que la respuesta contenga el ID del alimento
-          this.registrarConsumo(idAlimento, 1); // Asume que la cantidad consumida es 1 por defecto
+          if (response && response.length > 0) {
+            const idAlimento = response[0].id_alimento; // Asegúrate de que la respuesta contenga el ID del alimento
+            this.registrarConsumo(idAlimento, 1); // Asume que la cantidad consumida es 1 por defecto
+          }
         },
-        (error) => {
+        error: (error: any) => {
           console.error('Error adding alimento:', error);
         }
-      );
+      });
     }
   }
 
@@ -93,6 +99,7 @@ export class AlimentosPage implements OnInit {
   deleteAlimento(id: number) {
     this.alimentosService.deleteAlimento(id).subscribe(
       () => {
+        console.log('Alimento eliminado'); // Log
         this.loadAlimentos();
       },
       (error) => {
@@ -103,10 +110,12 @@ export class AlimentosPage implements OnInit {
 
   // Método para registrar el consumo de un alimento
   registrarConsumo(idAlimento: number, cantidad: number) {
+    console.log('Registrando consumo de alimento:', idAlimento, cantidad); // Log
     this.alimentosService
       .registrarConsumo(idAlimento, cantidad)
       .subscribe(() => {
-        console.log('Consumo registrado');
+        console.log('Consumo registrado'); // Log
+        this.alimentosService.notificarCambioEnAlimentosConsumidos();
       });
   }
 
