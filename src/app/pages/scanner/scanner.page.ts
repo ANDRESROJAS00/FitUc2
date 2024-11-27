@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { AlertController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
+import { AlimentosService } from 'src/app/services/alimentos.service';
 
 @Component({
   selector: 'app-scanner',
@@ -16,7 +17,8 @@ export class ScannerPage implements OnInit {
 
   constructor(
     private alertController: AlertController,
-    private http: HttpClient
+    private http: HttpClient,
+    private alimentosService: AlimentosService
   ) {}
 
   ngOnInit() {
@@ -42,7 +44,7 @@ export class ScannerPage implements OnInit {
     try {
       const granted = await this.requestPermissions();
       if (!granted) {
-        this.presentAlert();
+        this.presentAlert('Permiso denegado', 'Por favor, concede permiso para usar la cámara.');
         return;
       }
 
@@ -68,11 +70,31 @@ export class ScannerPage implements OnInit {
     }
   }
 
-  async presentAlert(): Promise<void> {
+  async presentAlert(header: string, message: string): Promise<void> {
     const alert = await this.alertController.create({
-      header: 'Permiso denegado',
-      message: 'Por favor, concede permiso para usar la cámara.',
+      header,
+      message,
       buttons: ['OK'],
+    });
+    await alert.present();
+  }
+
+  async presentConfirmAlert(productData: any): Promise<void> {
+    const alert = await this.alertController.create({
+      header: 'Agregar Alimento',
+      message: `¿Deseas agregar ${productData.product_name} como alimento consumido?`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+        },
+        {
+          text: 'Agregar',
+          handler: () => {
+            this.addConsumedFood(productData);
+          },
+        },
+      ],
     });
     await alert.present();
   }
@@ -87,9 +109,10 @@ export class ScannerPage implements OnInit {
     this.http.get(url).subscribe((data: any) => {
       if (data.status === 1) {
         this.productData = data.product;
+        this.presentConfirmAlert(this.productData);
       } else {
         this.productData = null;
-        this.presentProductNotFoundAlert();
+        this.presentAlert('Producto no encontrado', 'No se encontraron datos del producto para el código de barras escaneado.');
       }
     }, (error: any) => {
       console.error('Error al buscar datos del producto:', error);
@@ -97,12 +120,28 @@ export class ScannerPage implements OnInit {
     });
   }
 
-  async presentProductNotFoundAlert(): Promise<void> {
-    const alert = await this.alertController.create({
-      header: 'Producto no encontrado',
-      message: 'No se encontraron datos del producto para el código de barras escaneado.',
-      buttons: ['OK'],
-    });
-    await alert.present();
+  addConsumedFood(productData: any) {
+    const alimento = {
+      nombre: productData.product_name,
+      calorias: productData.nutriments.energy_value,
+      proteinas: productData.nutriments.proteins_value,
+      carbohidratos: productData.nutriments.carbohydrates_value,
+      grasas: productData.nutriments.fat_value,
+      porcion: productData.serving_size || '1 porción',
+    };
+
+    this.alimentosService.addAlimento(alimento).subscribe(
+      (response) => {
+        const idAlimento = response[0].id_alimento;
+        this.alimentosService.registrarConsumo(idAlimento, 1).subscribe(() => {
+          console.log('Consumo registrado');
+          this.alimentosService.notificarCambioEnAlimentosConsumidos();
+          this.alimentosService.agregarMacronutrientes(alimento); // Acumular macronutrientes
+        });
+      },
+      (error) => {
+        console.error('Error al agregar alimento:', error);
+      }
+    );
   }
 }

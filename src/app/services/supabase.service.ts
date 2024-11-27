@@ -1,5 +1,3 @@
-// src/app/services/supabase.service.ts
-
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
@@ -127,6 +125,7 @@ export class SupabaseService {
   // Agregar un nuevo alimento
   async addAlimento(alimento: any) {
     try {
+      console.log('Agregando alimento:', alimento); // Log
       const { data, error } = await this.supabase
         .from('alimentos')
         .insert(alimento)
@@ -135,6 +134,7 @@ export class SupabaseService {
       if (error) {
         this.handleError(error);
       }
+      console.log('Alimento agregado:', data); // Log
       return data;
     } catch (error) {
       this.handleError(error);
@@ -147,7 +147,7 @@ export class SupabaseService {
     try {
       console.log('Registrando consumo:', consumo); // Log
       const { data, error } = await this.supabase
-        .from('alimentos_consumidos')
+        .from('registro_alimentos')
         .insert(consumo);
 
       if (error) {
@@ -159,59 +159,5 @@ export class SupabaseService {
       this.handleError(error);
     }
     return null;
-  }
-
-  // Obtener el total de calorías y macros consumidos en el día
-  async obtenerCaloriasYMacrosConsumidos(userId: string): Promise<any> {
-    try {
-      console.log(
-        'Obteniendo calorías y macros consumidos para el usuario:',
-        userId
-      );
-
-      const today = new Date().toISOString().split('T')[0];
-      const { data, error } = await this.supabase
-        .from('alimentos_consumidos')
-        .select(
-          `
-        cantidad,
-        alimentos (
-          calorias,
-          proteinas,
-          carbohidratos,
-          grasas
-        )
-      `
-        )
-        .eq('id_usuario', userId)
-        .gte('fecha_consumo', `${today}T00:00:00`)
-        .lte('fecha_consumo', `${today}T23:59:59`);
-
-      if (error) {
-        this.handleError(error);
-      }
-
-      console.log('Datos de calorías y macros consumidos:', data);
-      if (!data) {
-        return { calorias: 0, proteinas: 0, carbohidratos: 0, grasas: 0 };
-      }
-
-      const resultado = data.reduce(
-        (total: any, consumo: any) => {
-          total.calorias += consumo.cantidad * consumo.alimentos.calorias;
-          total.proteinas += consumo.cantidad * consumo.alimentos.proteinas;
-          total.carbohidratos +=
-            consumo.cantidad * consumo.alimentos.carbohidratos;
-          total.grasas += consumo.cantidad * consumo.alimentos.grasas;
-          return total;
-        },
-        { calorias: 0, proteinas: 0, carbohidratos: 0, grasas: 0 }
-      );
-
-      return resultado;
-    } catch (error) {
-      this.handleError(error);
-    }
-    return { calorias: 0, proteinas: 0, carbohidratos: 0, grasas: 0 };
   }
 }

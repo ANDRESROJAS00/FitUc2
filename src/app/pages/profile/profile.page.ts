@@ -1,8 +1,6 @@
-// src/app/pages/profile/profile.page.ts
-
 import { Component, OnInit } from '@angular/core';
-import { AlimentosService } from 'src/app/services/alimentos.service';
 import { SupabaseService } from 'src/app/services/supabase.service';
+import { AlimentosService } from 'src/app/services/alimentos.service';
 
 @Component({
   selector: 'app-profile',
@@ -12,10 +10,12 @@ import { SupabaseService } from 'src/app/services/supabase.service';
 export class ProfilePage implements OnInit {
   userProfile: any;
   caloriasRecomendadas: number = 0;
-  caloriasConsumidas: number = 0;
-  proteinasConsumidas: number = 0;
-  carbohidratosConsumidos: number = 0;
-  grasasConsumidas: number = 0;
+  macronutrientesAcumulados = {
+    calorias: 0,
+    proteinas: 0,
+    carbohidratos: 0,
+    grasas: 0,
+  };
 
   constructor(
     private supabaseService: SupabaseService,
@@ -24,9 +24,11 @@ export class ProfilePage implements OnInit {
 
   async ngOnInit() {
     const user = await this.supabaseService.getUser();
+    console.log('Usuario autenticado:', user); // Log
 
     if (user) {
       const profile = await this.supabaseService.getUserProfile(user.id);
+      console.log('Perfil del usuario:', profile); // Log
       this.userProfile = profile;
 
       this.caloriasRecomendadas = this.calcularCalorias(
@@ -38,14 +40,9 @@ export class ProfilePage implements OnInit {
         profile.nivelActividad
       );
 
-      this.alimentosService
-        .obtenerCaloriasYMacrosConsumidos()
-        .subscribe((result) => {
-          this.caloriasConsumidas = result.calorias;
-          this.proteinasConsumidas = result.proteinas;
-          this.carbohidratosConsumidos = result.carbohidratos;
-          this.grasasConsumidas = result.grasas;
-        });
+      this.alimentosService.getMacronutrientesAcumulados().subscribe((macros) => {
+        this.macronutrientesAcumulados = macros;
+      });
     }
   }
 
@@ -88,4 +85,3 @@ export class ProfilePage implements OnInit {
     return parseFloat(caloriasTotales.toFixed(2));
   }
 }
-

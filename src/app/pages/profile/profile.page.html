@@ -1,5 +1,3 @@
-<!-- src/app/pages/profile/profile.page.html -->
-
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
@@ -16,19 +14,19 @@
         <ion-card-title>{{ userProfile.nombre }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <p><strong>Sexo:</strong> {{ userProfile.sexo }}</p>
+        <p><strong>Nombre:</strong> {{ userProfile.nombre }}</p>
+        <p><strong>Email:</strong> {{ userProfile.email }}</p>
         <p><strong>Edad:</strong> {{ userProfile.edad }} años</p>
         <p><strong>Altura:</strong> {{ userProfile.altura }} cm</p>
         <p><strong>Peso:</strong> {{ userProfile.peso }} kg</p>
+        <p><strong>Sexo:</strong> {{ userProfile.sexo }}</p>
         <p><strong>Objetivo:</strong> {{ userProfile.objetivo }}</p>
         <p><strong>Nivel de Actividad:</strong> {{ userProfile.nivelActividad }}</p>
         <p><strong>Calorías recomendadas:</strong> {{ caloriasRecomendadas }} kcal</p>
-        <p><strong>Calorías consumidas:</strong> {{ caloriasConsumidas }} kcal</p>
-        <ion-progress-bar value="{{ caloriasConsumidas / caloriasRecomendadas }}" color="primary"></ion-progress-bar>
-        <p><strong>Calorías restantes:</strong> {{ caloriasRecomendadas - caloriasConsumidas }} kcal</p>
-        <p><strong>Proteínas consumidas:</strong> {{ proteinasConsumidas }} g</p>
-        <p><strong>Carbohidratos consumidos:</strong> {{ carbohidratosConsumidos }} g</p>
-        <p><strong>Grasas consumidas:</strong> {{ grasasConsumidas }} g</p>
+        <p><strong>Calorías consumidas:</strong> {{ macronutrientesAcumulados.calorias }} kcal</p>
+        <p><strong>Proteínas consumidas:</strong> {{ macronutrientesAcumulados.proteinas }} g</p>
+        <p><strong>Carbohidratos consumidos:</strong> {{ macronutrientesAcumulados.carbohidratos }} g</p>
+        <p><strong>Grasas consumidas:</strong> {{ macronutrientesAcumulados.grasas }} g</p>
       </ion-card-content>
     </ion-card>
   </div>

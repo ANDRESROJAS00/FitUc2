@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, from } from 'rxjs';
+import { Observable, from, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { SupabaseService } from './supabase.service';
 import { switchMap, catchError } from 'rxjs/operators';
@@ -17,7 +17,43 @@ export class AlimentosService {
     'Content-Type': 'application/json',
   });
 
+  private alimentosConsumidosSubject = new Subject<void>();
+  private macronutrientesAcumulados = {
+    calorias: 0,
+    proteinas: 0,
+    carbohidratos: 0,
+    grasas: 0,
+  };
+
+  private macronutrientesSubject = new Subject<any>();
+
   constructor(private http: HttpClient, private supabaseService: SupabaseService) {}
+
+  getAlimentosConsumidosObservable(): Observable<void> {
+    return this.alimentosConsumidosSubject.asObservable();
+  }
+
+  getMacronutrientesAcumulados(): Observable<any> {
+    return this.macronutrientesSubject.asObservable();
+  }
+
+  agregarMacronutrientes(macronutrientes: any) {
+    this.macronutrientesAcumulados.calorias += macronutrientes.calorias;
+    this.macronutrientesAcumulados.proteinas += macronutrientes.proteinas;
+    this.macronutrientesAcumulados.carbohidratos += macronutrientes.carbohidratos;
+    this.macronutrientesAcumulados.grasas += macronutrientes.grasas;
+    this.macronutrientesSubject.next(this.macronutrientesAcumulados);
+  }
+
+  resetMacronutrientes() {
+    this.macronutrientesAcumulados = {
+      calorias: 0,
+      proteinas: 0,
+      carbohidratos: 0,
+      grasas: 0,
+    };
+    this.macronutrientesSubject.next(this.macronutrientesAcumulados);
+  }
 
   // Obtener todos los alimentos del usuario autenticado
   getAlimentos(): Observable<any> {
@@ -37,7 +73,7 @@ export class AlimentosService {
   }
 
   // Insertar un nuevo alimento
-  insertarAlimento(alimento: any): Observable<any> {
+  addAlimento(alimento: any): Observable<any> {
     return from(this.supabaseService.getUser()).pipe(
       switchMap(user => {
         if (user) {
@@ -89,32 +125,6 @@ export class AlimentosService {
     );
   }
 
-  // Obtener el total de calorías y macros consumidos en el día
-  obtenerCaloriasYMacrosConsumidos(): Observable<any> {
-    return new Observable(observer => {
-      this.supabaseService.getUser().then(user => {
-        if (user) {
-          this.supabaseService
-            .obtenerCaloriasYMacrosConsumidos(user.id)
-            .then(result => {
-              observer.next(result);
-              observer.complete();
-            })
-            .catch(error => {
-              observer.error(error);
-            });
-        } else {
-          observer.error('Usuario no autenticado');
-        }
-      });
-    });
-  }
-
-  // Agregar un nuevo alimento
-  addAlimento(alimento: any): Observable<any> {
-    return this.insertarAlimento(alimento);
-  }
-
   // Registrar el consumo de un alimento
   registrarConsumo(idAlimento: number, cantidad: number): Observable<any> {
     return from(this.supabaseService.getUser()).pipe(
@@ -126,7 +136,7 @@ export class AlimentosService {
             cantidad: cantidad,
             fecha: new Date().toISOString(),
           };
-          return this.http.post(`${this.SUPABASEURL}/consumos`, consumo, { headers: this.headers });
+          return this.http.post(`${this.SUPABASEURL}/registro_alimentos`, consumo, { headers: this.headers });
         } else {
           throw new Error('User not authenticated');
         }
@@ -136,5 +146,10 @@ export class AlimentosService {
         throw error;
       })
     );
+  }
+
+  // Notificar cambios en los alimentos consumidos
+  notificarCambioEnAlimentosConsumidos() {
+    this.alimentosConsumidosSubject.next();
   }
 }
