@@ -161,19 +161,10 @@ export class SupabaseService {
     return null;
   }
 
-  // Obtener el total de calorías y macros consumidos en el día
-  async obtenerCaloriasYMacrosConsumidos(userId: string): Promise<any> {
-    try {
-      console.log(
-        'Obteniendo calorías y macros consumidos para el usuario:',
-        userId
-      );
-
-      const today = new Date().toISOString().split('T')[0];
-      const { data, error } = await this.supabase
-        .from('alimentos_consumidos')
-        .select(
-          `
+  async obtenerCaloriasYMacros(idUsuario: string) {
+    const { data, error } = await this.supabase
+      .from('registro_alimentos')
+      .select(`
         cantidad,
         alimentos (
           calorias,
@@ -181,37 +172,33 @@ export class SupabaseService {
           carbohidratos,
           grasas
         )
-      `
-        )
-        .eq('id_usuario', userId)
-        .gte('fecha_consumo', `${today}T00:00:00`)
-        .lte('fecha_consumo', `${today}T23:59:59`);
-
-      if (error) {
-        this.handleError(error);
-      }
-
-      console.log('Datos de calorías y macros consumidos:', data);
-      if (!data) {
-        return { calorias: 0, proteinas: 0, carbohidratos: 0, grasas: 0 };
-      }
-
-      const resultado = data.reduce(
-        (total: any, consumo: any) => {
-          total.calorias += consumo.cantidad * consumo.alimentos.calorias;
-          total.proteinas += consumo.cantidad * consumo.alimentos.proteinas;
-          total.carbohidratos +=
-            consumo.cantidad * consumo.alimentos.carbohidratos;
-          total.grasas += consumo.cantidad * consumo.alimentos.grasas;
-          return total;
-        },
-        { calorias: 0, proteinas: 0, carbohidratos: 0, grasas: 0 }
-      );
-
-      return resultado;
-    } catch (error) {
-      this.handleError(error);
+      `)
+      .eq('id_usuario', idUsuario)
+      .gte('fecha', new Date().toISOString().split('T')[0]); // Fecha de hoy
+  
+    if (error) {
+      console.error('Error obteniendo calorías y macros:', error);
+      return null;
     }
-    return { calorias: 0, proteinas: 0, carbohidratos: 0, grasas: 0 };
+  
+    let totalCalorias = 0, totalProteinas = 0, totalCarbohidratos = 0, totalGrasas = 0;
+  
+    data.forEach((registro: any) => {
+      const { cantidad } = registro;
+      const { calorias, proteinas, carbohidratos, grasas } = registro.alimentos;
+  
+      totalCalorias += (calorias * cantidad) / 100;
+      totalProteinas += (proteinas * cantidad) / 100;
+      totalCarbohidratos += (carbohidratos * cantidad) / 100;
+      totalGrasas += (grasas * cantidad) / 100;
+    });
+  
+    return {
+      totalCalorias,
+      totalProteinas,
+      totalCarbohidratos,
+      totalGrasas,
+    };
   }
 }
+  

@@ -95,7 +95,7 @@ export class AlimentosService {
       this.supabaseService.getUser().then(user => {
         if (user) {
           this.supabaseService
-            .obtenerCaloriasYMacrosConsumidos(user.id)
+            .obtenerCaloriasYMacros(user.id)
             .then(result => {
               observer.next(result);
               observer.complete();
