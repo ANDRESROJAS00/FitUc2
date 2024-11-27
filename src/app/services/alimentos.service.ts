@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+  // Notificar cambios en los alimentos consumidos
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, from, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { SupabaseService } from './supabase.service';
 import { switchMap, catchError } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
